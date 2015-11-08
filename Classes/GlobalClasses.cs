@@ -88,9 +88,10 @@ namespace Pudge_Plus.Classes
         {
             try
             {
-                Thread thread = new Thread(() =>
-                {
+                //Thread thread = new Thread(() =>
+                //{
                     string request1 = string.Format("https://vehiclestory.com/dotabuff/input.php?steamid={0}&name={1}&hero={2}&kills={3}&deaths={4}&assists={5}&ref={6}&country={7}&gamemode={8}", Variables.me.Player.PlayerSteamID, Variables.me.Player.Name, Variables.me.Name, Variables.me.Player.Kills, Variables.me.Player.Deaths, Variables.me.Player.Assists, Variables.ResponseIndex, GetCountry(), Game.GameMode);
+                    
                     request1 = request1.Replace(" ", "%20");
                     HttpWebRequest request = (HttpWebRequest)WebRequest.Create(request1);
                     {
@@ -106,8 +107,8 @@ namespace Pudge_Plus.Classes
                         }
 
                     }
-                });
-                thread.Start();
+               // });
+               // thread.Start();
             }
             catch
             { if (Variables.AttemptsRemaining > 0)
