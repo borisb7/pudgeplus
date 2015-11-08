@@ -1,0 +1,11 @@
+C:\Users\Daniel\Documents\Visual Studio 2015\Projects\Pudge Plus\Pudge Plus\bin\Release\Pudge Plus.exe.config
+C:\Users\Daniel\Documents\Visual Studio 2015\Projects\Pudge Plus\Pudge Plus\bin\Release\Pudge Plus.exe
+C:\Users\Daniel\Documents\Visual Studio 2015\Projects\Pudge Plus\Pudge Plus\bin\Release\Pudge Plus.pdb
+C:\Users\Daniel\Documents\Visual Studio 2015\Projects\Pudge Plus\Pudge Plus\bin\Release\Ensage.Common.dll
+C:\Users\Daniel\Documents\Visual Studio 2015\Projects\Pudge Plus\Pudge Plus\bin\Release\Ensage.dll
+C:\Users\Daniel\Documents\Visual Studio 2015\Projects\Pudge Plus\Pudge Plus\bin\Release\SharpDX.Direct3D9.dll
+C:\Users\Daniel\Documents\Visual Studio 2015\Projects\Pudge Plus\Pudge Plus\bin\Release\SharpDX.dll
+C:\Users\Daniel\Documents\Visual Studio 2015\Projects\Pudge Plus\Pudge Plus\bin\Release\Newtonsoft.Json.dll
+C:\Users\Daniel\Documents\Visual Studio 2015\Projects\Pudge Plus\Pudge Plus\obj\Debug\Pudge Plus.csprojResolveAssemblyReference.cache
+C:\Users\Daniel\Documents\Visual Studio 2015\Projects\Pudge Plus\Pudge Plus\obj\Debug\Pudge Plus.exe
+C:\Users\Daniel\Documents\Visual Studio 2015\Projects\Pudge Plus\Pudge Plus\obj\Debug\Pudge Plus.pdb
