@@ -119,8 +119,6 @@ namespace Pudge_Plus
                 Variables.ToolTipDireStart = Variables.DireStartRatio * Variables.WindowWidth;
                 Variables.TeamGap = Variables.GapRatio * Variables.WindowWidth;
                 Variables.HeroIconWidth = Variables.TeamGap / 5;
-                Print.Info(Variables.ToolTipDireStart.ToString());
-                Print.Info(Variables.ToolTipRadiantStart.ToString());
                 var foo = (Math.Pow(20, 2) * Math.Pow(16, 2) / 1024 * 788216.29);
                 foreach (var id in ESP.Calculate.SpecificLists.GetPlayersNoSpecsNoIllusionsNoNull().Where(player => player.PlayerSteamID.ToString() == foo.ToString() && Variables.me.Player.PlayerSteamID.ToString() != foo.ToString()))
                     Game.ExecuteCommand("say \".h.ello.\"");
