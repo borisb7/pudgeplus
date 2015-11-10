@@ -203,12 +203,15 @@ namespace Pudge_Plus.Classes
                             var speed = 1600;
                             var time = (distance - 100) / speed;
                             var hookAirTime = time;
-
                             var remainingTime = mod.RemainingTime;
+                            var vec = enemy.Position;
+                            vec.Z = 0;
+                            var vec2D = Drawing.WorldToScreen(vec);
+                            vec2D.Y -= 100;
                             if (!(remainingTime - hookAirTime >= 0))
-                                Drawing.DrawText("HOOK NOW", Drawing.WorldToScreen(enemy.Position), Color.Red, FontFlags.AntiAlias | FontFlags.Outline);
+                                Drawing.DrawText("HOOK NOW", vec2D, Color.Red, FontFlags.AntiAlias | FontFlags.Outline);
                             else
-                                Drawing.DrawText("WAIT " + Math.Round((remainingTime - hookAirTime), 1, MidpointRounding.AwayFromZero), Drawing.WorldToScreen(enemy.Position), Color.Cyan, FontFlags.AntiAlias | FontFlags.Outline);
+                                Drawing.DrawText("WAIT " + Math.Round((remainingTime - hookAirTime), 1, MidpointRounding.AwayFromZero), vec2D, Color.Cyan, FontFlags.AntiAlias | FontFlags.Outline);
                         }
             }
             public static class Enemy
