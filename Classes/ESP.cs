@@ -14,6 +14,99 @@ namespace Pudge_Plus.Classes
     {
         public static class Draw
         {
+            public static class Interface
+            {
+                private static int MenuIndex = 0;
+                private static int Width = 150;
+                private static string Title = "Pudge+ By NadeHouse";
+                private static string ToolTip = "Tool tip";
+                private static List<Item> MenuItems = new List<Item>();
+                private class Item
+                {
+                    public string Text { get; set; }
+                    public int Index { get; set; }
+                    public Variables.CustomInteger targetVariable { get; set; }
+                    public string[] CustomText { get; set; }
+                    public int Value { get; set; }
+                  //  public int
+                }
+                public static void Add(string text, ref Variables.CustomInteger targetVariable, int Min = 0, int Max = 2,string[] CustomOverride = null)
+                {
+                    Item item = new Item();
+                    item.Text = text;
+                    item.Index = MenuIndex;
+                    item.targetVariable = targetVariable;
+                    item.CustomText = CustomOverride;
+                    item.Value = 0;
+                    MenuItems.Add(item);
+                    MenuIndex++;
+                }
+                public static void Render()
+                {
+                    Vector2 StartingCoords = Variables.ESP_Notifier_StartingCoords;
+                    StartingCoords.Y += 53 + 8;
+                    Vector2 TitleCoords = StartingCoords;
+                    TitleCoords.X += Width / 2 - ((Title.ToCharArray().Length * 6)/2);
+                    
+                    StartingCoords.X -= 5;
+                    
+                    Vector2 backdropUntil = new Vector2(Width, ((MenuIndex + 1) * 12) + 5 + 12 + 5 +3);
+                    Drawing.DrawRect(StartingCoords, backdropUntil, new Color(0, 0, 0, 255));//Background (backdrop)
+                    
+                    Vector2 tooltipBanner = new Vector2(StartingCoords.X, backdropUntil.Y + StartingCoords.Y - 12 - 5 -3); //
+                    Drawing.DrawRect(tooltipBanner, new Vector2(Width, 12 + 5), Color.RoyalBlue); //Tooltip background
+                    Drawing.DrawText(ToolTip, new Vector2(tooltipBanner.X + Width/2 - ((ToolTip.ToCharArray().Length/2 * 5)), tooltipBanner.Y), Color.DarkGray, FontFlags.AntiAlias | FontFlags.Outline); //Tooltip text
+                    Drawing.DrawRect(StartingCoords, new Vector2(Width, (12 * MenuIndex) + 10 + 12 + 3 + 12), Color.DarkBlue, true); //Borderline
+                    Drawing.DrawText(Title, TitleCoords, Color.LightSkyBlue, FontFlags.AntiAlias | FontFlags.Outline); // Title
+                    Vector2 underLineStart = new Vector2(StartingCoords.X, StartingCoords.Y + 12 + 1);
+                    Vector2 underLineEnd = new Vector2(underLineStart.X + Width, underLineStart.Y);
+                    Drawing.DrawLine(underLineStart, underLineEnd, Color.DarkBlue);
+                    StartingCoords.X += 5;
+                    StartingCoords.Y += 2;
+                    foreach (var option in MenuItems)
+                    {
+                        Color color = Color.White;
+                        if (option.Index == Variables.Settings.SelectedIndex)
+                            color = Color.Cyan;
+                        StartingCoords.Y += (12);
+                        Drawing.DrawText(option.Text, StartingCoords, color, FontFlags.AntiAlias | FontFlags.Outline);
+                        Vector2 valueCoords = StartingCoords;
+                        valueCoords.X = (Width + 10) - 12 - 5;
+                        if (option.CustomText != null)
+                            Drawing.DrawText(option.CustomText[option.Value], valueCoords, Color.Lime, FontFlags.AntiAlias | FontFlags.Outline);
+                        else
+                            Drawing.DrawText(option.Value.ToString(), valueCoords, Color.Lime, FontFlags.AntiAlias | FontFlags.Outline);
+                    }
+                }
+                public static class MenuControls
+                {
+                    public static void Left()
+                    {
+                       // if (MenuItems[Variables.Settings.SelectedIndex].
+                        MenuItems[Variables.Settings.SelectedIndex].Value--;
+                        MenuItems[Variables.Settings.SelectedIndex].targetVariable.val--;
+                    }
+                    public static void Right()
+                    {
+                        MenuItems[Variables.Settings.SelectedIndex].Value++;
+                        MenuItems[Variables.Settings.SelectedIndex].targetVariable.val++;
+                    }
+                    public static void Down()
+                    {
+                        if (Variables.Settings.SelectedIndex >= 0 && Variables.Settings.SelectedIndex < ESP.Draw.Interface.MenuIndex -1)
+                            Variables.Settings.SelectedIndex++;
+                        else
+                            Variables.Settings.SelectedIndex = 0;
+                    }
+                    public static void Up()
+                    {
+                        if (Variables.Settings.SelectedIndex <= ESP.Draw.Interface.MenuIndex-1 && Variables.Settings.SelectedIndex > 0)
+                            Variables.Settings.SelectedIndex--;
+                        else
+                            Variables.Settings.SelectedIndex = ESP.Draw.Interface.MenuIndex -1;
+                    }
+                }
+            }
             public static class Notifier
             {
                 public static void Backdrop(int StartingX, int StartingY, int ClosingX, int ClosingY, Color color)
@@ -299,7 +392,7 @@ namespace Pudge_Plus.Classes
                             }
                             catch (Exception ex)
                             {
-                                Print.Info(ex.Message);
+                                //Print.Info(ex.Message);
                             }
 
                         }
@@ -324,25 +417,43 @@ namespace Pudge_Plus.Classes
                                 int Cooldown = (int)spell.Cooldown;
                                 //Print.Info(enemy.Name + " " + enemy.Spellbook.Spells.ToList().Count);
                                 Vector2 heroBase = Drawing.WorldToScreen(enemy.Position) + new Vector2(- ((20 * (enemy.Spellbook.Spells.ToList().Count -1)/2)) , 40); //Base drawing point
-                                Drawing.DrawRect(heroBase + new Vector2(counter * 20 - 5, 0), new Vector2(20, Cooldown == 0 ? 6 : 22), new ColorBGRA(0, 0, 0, 100), true); //Skill box outlines
+                                Drawing.DrawRect(heroBase + new Vector2(counter * 20 - 5, 0), new Vector2(20, 20), Drawing.GetTexture(string.Format("materials/ensage_ui/spellicons/{0}.vmat", spell.Name ))); //Skill icons
+                                Drawing.DrawRect(heroBase + new Vector2(counter * 20 - 5, 20), new Vector2(20, Cooldown == 0 ? 6 : 22), new ColorBGRA(0, 0, 0, 100), true); //Skill box outlines
                                 if (spell.ManaCost > enemy.Mana) //Out of mana - Draw background Blue
-                                {
-                                    Drawing.DrawRect(heroBase + new Vector2(counter * 20 - 5, 0),
-                                        new Vector2(20, Cooldown == 0 ? 6 : 22),
-                                        new ColorBGRA(0, 0, 150, 150));
-                                }
+                                    Drawing.DrawRect(heroBase + new Vector2(counter * 20 - 5, 20), new Vector2(20, Cooldown == 0 ? 6 : 22), new ColorBGRA(0, 0, 150, 150));
                                 if (Cooldown > 0) //Draw cool down
                                 {
                                     var text = Cooldown.ToString();
                                     var textSize = Drawing.MeasureText(text, "Arial", new Vector2(10, 200), FontFlags.Outline | FontFlags.AntiAlias); //Measure text
-                                    var textPos = (heroBase + new Vector2(counter * 20 - 5, 0) - 1 +
-                                                   new Vector2(10 - textSize.X / 2, -textSize.Y / 2 + 12));
+                                    var textPos = (heroBase + new Vector2(counter * 20 - 5, 20) - 1 + new Vector2(10 - textSize.X / 2, -textSize.Y / 2 + 12));
                                     Drawing.DrawText(text, textPos, Color.White, FontFlags.AntiAlias | FontFlags.Outline);
                                 }
                                 if (spell.Level > 0)
                                     for (int lvl = 1; lvl <= spell.Level; lvl++)
-                                        Drawing.DrawRect(heroBase + new Vector2(counter * 20 - 5 + 3 * lvl, 2), new Vector2(2, 2), new ColorBGRA(255, 255, 0, 255), true); //Draw skill level
+
+                                        Drawing.DrawRect(heroBase + new Vector2(counter * 20 - 5 + 3 * lvl, 22), new Vector2(2, 2), new ColorBGRA(255, 255, 0, 255), true); //Draw skill level
                                 counter++; //Skill index
+                            }
+                            Item[] specialItems = { enemy.FindItem("item_blink"), enemy.FindItem("item_force_staff"), enemy.GetDagon()};
+                            foreach (var item in specialItems)
+                            {
+                                if (item != null)
+                                {
+                                    int Cooldown = (int)item.Cooldown;
+                                    Vector2 heroBase = Drawing.WorldToScreen(enemy.Position) + new Vector2(-((20 * (enemy.Spellbook.Spells.ToList().Count - 1) / 2)), 40); //Base drawing point
+                                    Drawing.DrawRect(heroBase + new Vector2(counter * 20 - 5, 0), new Vector2(28, 20), Drawing.GetTexture(string.Format("materials/ensage_ui/items/{0}.vmat", item.Name.Remove(0,5)))); //Skill box outlines
+                                    Drawing.DrawRect(heroBase + new Vector2(counter * 20 - 5, 20), new Vector2(20, Cooldown == 0 ? 6 : 22), new ColorBGRA(0, 0, 0, 100), true); //Skill box outlines
+                                    if (item.ManaCost > enemy.Mana) //Out of mana - Draw background Blue
+                                        Drawing.DrawRect(heroBase + new Vector2(counter * 20 - 5, 20), new Vector2(20, Cooldown == 0 ? 6 : 22), new ColorBGRA(0, 0, 150, 150));
+                                    if (Cooldown > 0) //Draw cool down
+                                    {
+                                        var text = Cooldown.ToString();
+                                        var textSize = Drawing.MeasureText(text, "Arial", new Vector2(10, 200), FontFlags.Outline | FontFlags.AntiAlias); //Measure text
+                                        var textPos = (heroBase + new Vector2(counter * 20 - 5, 20) - 1 + new Vector2(10 - textSize.X / 2, -textSize.Y / 2 + 12));
+                                        Drawing.DrawText(text, textPos, Color.White, FontFlags.AntiAlias | FontFlags.Outline);
+                                    }
+                                    counter++; //Skill index
+                                }
                             }
                         }
                         catch

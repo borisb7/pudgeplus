@@ -26,7 +26,26 @@ namespace Pudge_Plus
             Variables.TopRune.current = false;
             Variables.TopRune.rune = new Rune();
             Variables.BottomRune.rune = new Rune();
-           //Game.OnUpdate += Game_OnUpdate; //Information
+            //GlobalClasses.MakeConfig();
+            
+           // var whatthefuckamIdoing = new Variables.CustomInteger(ref Variables.Settings.Basic_ESP_Value);
+            ESP.Draw.Interface.Add("Basic ESP", ref Variables.Settings.Basic_ESP_Value, 0,1,new string[] { "On", "Off" });
+            //ESP.Draw.Interface.Add("Combo Status", 0);
+            //ESP.Draw.Interface.Add("Maximum Damage Output", 0);
+            //ESP.Draw.Interface.Add("Mana Required", 0);
+            //ESP.Draw.Interface.Add("Auto-Hook", 0);
+            //ESP.Draw.Interface.Add("Auto-Combo", 0);
+            //ESP.Draw.Interface.Add("Prediction Box", 0);
+            //ESP.Draw.Interface.Add("Enemy Skills", 0);
+            //ESP.Draw.Interface.Add("Enemy Tracker", 0);
+            //ESP.Draw.Interface.Add("Inventory Tracker", 0);
+            //ESP.Draw.Interface.Add("Rune Tracker", 0);
+            //ESP.Draw.Interface.Add("Eul's Timer", 0);
+            //ESP.Draw.Interface.Add("Teleport Timer", 0);
+            //ESP.Draw.Interface.Add("Last Hit Notifier", 0);
+            //ESP.Draw.Interface.Add("Visible By Enemy", 0);
+            //ESP.Draw.Interface.Add("Lasthit Notifier", 0);
+            //Game.OnUpdate += Game_OnUpdate; //Information
             Game.OnWndProc += Game_OnWndProc; //Keystroke Reader
             Drawing.OnDraw += Drawing_OnDraw; //Graphical Drawer
            //Drawing.OnEndScene += Drawing_OnEndScene;
@@ -45,7 +64,7 @@ namespace Pudge_Plus
                 });*/
             Print.Encolored(Variables.AuthorNotes, ConsoleColor.Cyan);
         }
-        #region Notinuse
+        #region Not in use
         private static void Drawing_OnEndScene(EventArgs args)
         {
             if (Variables.DrawNotification)
@@ -74,6 +93,7 @@ namespace Pudge_Plus
         {
             
         }
+        #endregion
         private static void Game_OnWndProc(WndEventArgs args)
         {
             if (!Game.IsChatOpen)
@@ -86,20 +106,49 @@ namespace Pudge_Plus
                             case 'E':
                                 Variables.HookForMe = true;
                                 break;
+                            case 'K':
+                                Print.Info(Variables.me.Player.Kills.ToString());
+                                break;
                         }
                         break;
                     case (uint)Utils.WindowsMessages.WM_KEYUP:
+                        //38 = UP arrow
+                        //39 = Right Arrow
+                        //40 = Down Arrow
+                        //Left Arrow = 47
                         switch (args.WParam)
                         {
                             case 'E':
                                 Variables.HookForMe = false;
                                 break;
+                            case 45:
+                                GlobalClasses.ToggleBool(ref Variables.Settings.ShowMenu);
+                                break;
+                        }
+                        if (Variables.Settings.ShowMenu)
+                        {
+                            switch (args.WParam)
+                            {
+                                case 38: //up
+                                    ESP.Draw.Interface.MenuControls.Up();
+                                    break;
+                                case 40: //down
+                                    ESP.Draw.Interface.MenuControls.Down();
+                                    break;
+                                case 39: //right
+                                    ESP.Draw.Interface.MenuControls.Right();
+                                    break;
+                                case 37: //left
+                                    ESP.Draw.Interface.MenuControls.Left();
+                                    break;
+                                  
+                            }
                         }
                         break;
                 }
             }
         }
-        #endregion
+        
         private static void Drawing_OnDraw(EventArgs args)
         {
               #region Fundamentals
@@ -135,16 +184,29 @@ namespace Pudge_Plus
                 return;
             }
             #endregion
-            
+
+            /// <summary>
+            /// Get or reset runes after the countdown of the appearance of a new rune.
+            /// Draw notification of when to hook friendly to bring them back.
+            /// Draw player information from icon bar
+            /// Automatically cast spells.
+            /// </summary>
+
+            /* First assign and declare your variables */
+
+            //Get players
             var players = ESP.Calculate.SpecificLists.GetPlayersNoSpecsNoIllusionsNoNull(); //Get Players
             List<Player> pla = players;
             if (!players.Any())
                 return;
-             Variables.TimeTillNextRune = 120 - ((int)Game.GameTime % 120);
+
+            //Reset runes after waiting time
+            Variables.TimeTillNextRune = 120 - ((int)Game.GameTime % 120);
              if (Utils.SleepCheck("runeResetAntiSpam"))
                  RuneHandler.ResetRunes();
              if (Utils.SleepCheck("runeCheck"))
                  RuneHandler.GetRunes();
+
 
             if (Variables.DeveloperMode)
                 if (Variables.HookLocationDrawer)
@@ -153,8 +215,10 @@ namespace Pudge_Plus
                     Drawing.DrawText("ENEMY WAS HERE", Variables.EnemyLocation, Color.Red, FontFlags.AntiAlias | FontFlags.Outline);
                     Drawing.DrawText("PREDICTION", Variables.PredictionLocation, Color.Cyan, FontFlags.AntiAlias | FontFlags.Outline);
                 }
+            //Get runes
             var topRune = RuneHandler.GetRuneType(Variables.TopRune);
             var botRune = RuneHandler.GetRuneType(Variables.BottomRune);
+            //Draw ESP
             ESP.Draw.LastHit.Marker(ESP.Calculate.Creeps.GetCreeps(), Variables.me);
             ESP.Draw.Notifier.Backdrop(10, 47, 120, 53, new Color(0, 0, 0, 200));
             ESP.Draw.Notifier.Info("Top:", Color.Green, 0);
@@ -162,6 +226,8 @@ namespace Pudge_Plus
             ESP.Draw.Notifier.Info("Bot:", Color.Green, 1);
             ESP.Draw.Notifier.Info(botRune.RuneType, botRune.color, 1, 6 * 4);
             ESP.Draw.Notifier.HeroVisible();
+           // if (Variables.Settings.ShowMenu)
+              //  ESP.Draw.Interface.Render();
 
             if (Variables.me.Name == "npc_dota_hero_pudge")
                 foreach (var friendly in ESP.Calculate.SpecificLists.TeamMates(players)) //Team mates & myself
@@ -206,6 +272,7 @@ namespace Pudge_Plus
                             ESP.Draw.Enemy.pudge(enemy);
                             if (ESP.Calculate.Enemy.isMoving(enemy.Position, Variables.EnemyIndex))
                             {
+                                //Print.Success("moving");
                                 try
                                 {
                                     HookHandler.PredictClass predict = HookHandler.getPrediction(Variables.me, enemy, Variables.PredictMethod);
@@ -216,6 +283,7 @@ namespace Pudge_Plus
                             }
                             else
                             {
+                                //Print.Error("not moving");
                                 var closest = ESP.Calculate.Enemy.ClosestToMouse(Variables.me, 1400);
                                 if (closest != null && closest.Player.Name == enemy.Player.Name)
                                 {

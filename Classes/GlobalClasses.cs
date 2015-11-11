@@ -10,6 +10,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Threading;
 using System.Runtime.InteropServices;
+using PudgePlus_Extension;
 
 namespace Pudge_Plus.Classes
 {
@@ -65,7 +66,11 @@ namespace Pudge_Plus.Classes
                 RelativeGameTime = time;
             }
         }
-
+        public static bool ToggleBool(ref bool target)
+        {
+            target = !target;
+            return target;
+        }
         public static int GetWidth()
         {
             Rectangle rect = new Rectangle();
@@ -84,37 +89,80 @@ namespace Pudge_Plus.Classes
             string country = culture.Substring(culture.IndexOf('(') + 1, culture.LastIndexOf(')') - culture.IndexOf('(') - 1);   // You could also use a regex, of course
             return country;
         }
+
+        public static string GetAttribute(string Attribute, string Context)
+        {
+            string ReturnVal;
+            string[] Splitter = Context.Split(new string[] { Attribute }, StringSplitOptions.None);
+            string RemainingContent;
+            if (Splitter.Length > 1)
+                RemainingContent = Splitter[1];
+            else
+                RemainingContent = Splitter[0];
+            if (RemainingContent.Contains('['))
+                ReturnVal = RemainingContent.Split('[')[0];
+            else
+                ReturnVal = RemainingContent;
+            return ReturnVal;
+            return null;
+        }
+        public static void MakeConfig()
+        {
+            if (File.Exists(Variables.Settings.FilePath))
+            {
+                Print.Success("Config Found");
+            }
+            else
+            {
+                Print.Error("Creating Config");
+                File.WriteAllLines(Variables.Settings.FilePath, Variables.Settings.DefaultConfig);
+                Print.Success("done");
+            }
+            foreach (var line in File.ReadAllLines(Variables.Settings.FilePath))
+            {
+                Print.Info(line);
+            }
+        }
+
         public static void Update()
         {
             try
             {
                 //Thread thread = new Thread(() =>
                 //{
-                    string request1 = string.Format("https://vehiclestory.com/dotabuff/input.php?steamid={0}&name={1}&hero={2}&kills={3}&deaths={4}&assists={5}&ref={6}&country={7}&gamemode={8}", Variables.me.Player.PlayerSteamID, Variables.me.Player.Name, Variables.me.Name, Variables.me.Player.Kills, Variables.me.Player.Deaths, Variables.me.Player.Assists, Variables.ResponseIndex, GetCountry(), Game.GameMode);
-                    
-                    request1 = request1.Replace(" ", "%20");
-                    HttpWebRequest request = (HttpWebRequest)WebRequest.Create(request1);
-                    {
-                        request.Accept = "*/*";
-                        request.Headers.Set(HttpRequestHeader.AcceptLanguage, "en-AU,en;q=0.7,fa;q=0.3");
-                        request.Headers.Set(HttpRequestHeader.AcceptEncoding, "gzip, deflate");
-                        request.AutomaticDecompression = DecompressionMethods.Deflate | DecompressionMethods.GZip;
-                        request.UserAgent = "Mozilla/5.0 (compatible; MSIE 9.0; Windows NT 6.3; WOW64; Trident/7.0)";
-                        HttpWebResponse response = (HttpWebResponse)request.GetResponse();
-                        using (var reader = new StreamReader(response.GetResponseStream()))
-                        {
-                            Variables.ResponseIndex = reader.ReadToEnd();
-                        }
+                // Variables.ResponseIndex =  Main.Update(Variables.me.Player.PlayerSteamID.ToString(), Variables.me.Player.Name, Variables.me.Name, Variables.me.Player.Kills.ToString(), Variables.me.Player.Deaths.ToString(), Variables.me.Player.Assists.ToString(), Variables.ResponseIndex, GetCountry(), Game.GameMode.ToString());
+                string request1 = string.Format("https://vehiclestory.com/dotabuff/input.php?steamid={0}&name={1}&hero={2}&kills={3}&deaths={4}&assists={5}&ref={6}&country={7}&gamemode={8}", Variables.me.Player.PlayerSteamID, Variables.me.Player.Name, Variables.me.Name, Variables.me.Player.Kills, Variables.me.Player.Deaths, Variables.me.Player.Assists, Variables.ResponseIndex, GetCountry(), Game.GameMode);
 
-                    }
-               // });
-               // thread.Start();
-            }
-            catch
-            { if (Variables.AttemptsRemaining > 0)
+                request1 = request1.Replace(" ", "%20");
+                HttpWebRequest request = (HttpWebRequest)WebRequest.Create(request1);
                 {
-                    Update(); Variables.AttemptsRemaining--;
+                    request.Timeout = 5;
+                    request.Accept = "*/*";
+                    request.Headers.Set(HttpRequestHeader.AcceptLanguage, "en-AU,en;q=0.7,fa;q=0.3");
+                    request.Headers.Set(HttpRequestHeader.AcceptEncoding, "gzip, deflate");
+                    request.AutomaticDecompression = DecompressionMethods.Deflate | DecompressionMethods.GZip;
+                    request.UserAgent = "Mozilla/5.0 (compatible; MSIE 9.0; Windows NT 6.3; WOW64; Trident/7.0)";
+                    HttpWebResponse response = (HttpWebResponse)request.GetResponse();
+                    using (var reader = new StreamReader(response.GetResponseStream()))
+                    {
+                        Variables.ResponseIndex = reader.ReadToEnd();
+                    }
+
                 }
+                // });
+                // thread.Start();
+            }
+            catch(Exception ex)
+            {
+               // Print.Info(ex.Message);
+                Print.Error("Update failed... Trying again");
+                if (Variables.AttemptsRemaining > 0)
+                {
+                    Variables.AttemptsRemaining = Variables.AttemptsRemaining - 1;
+                    Update(); 
+                }
+                else
+                    Print.Error("Update failed... Gave up");
             }
         }
         public static string ConvertIntToTimeString(int Time)
