@@ -114,6 +114,8 @@ namespace Pudge_Plus.Classes
             else
             {
                 Print.Error("Creating Config");
+                if (!Directory.Exists(Variables.Settings.Directory))
+                    Directory.CreateDirectory(Variables.Settings.Directory);
                 File.WriteAllLines(Variables.Settings.FilePath, Variables.Settings.DefaultConfig);
                 Print.Success("done");
             }

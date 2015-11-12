@@ -68,6 +68,7 @@ namespace Pudge_Plus.Classes
         {
             public static string[] OnOff = new string[] { "On", "Off" };
             public static string FilePath = string.Format(@"{0}\Pudge+\Settings.txt", Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData));
+            public static string Directory = string.Format(@"{0}\Pudge+\", Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData));
             public static string[] DefaultConfig = { "[Name]Basic ESP[Value]0" , "[Name]Combo Status[Value]0", "[Name]Maximum Damage Output[Value]0", "[Name]Mana Required[Value]0", "[Name]Auto Hook[Value]0", "[Name]Auto Combo[Value]0",
                 "[Name]Prediction Box[Value]0", "[Name]Enemy Skills[Value]0", "[Name]Enemy Tracker[Value]0", "[Name]Inventory Tracker[Value]0", "[Name]Rune Tracker[Value]0", "[Name]Eul's Timer[Value]0", "[Name]Teleport Timer[Value]0",
                 "[Name]Last Hit Notifier[Value]0", "[Name]Visible By Enemy[Value]0", "[Name]Spirit Breaker Charge[Value]0", "[Name]Skill Shot Notifier[Value]0", "[Name]Hook Lines[Value]0" };
