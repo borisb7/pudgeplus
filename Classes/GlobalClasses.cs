@@ -92,7 +92,7 @@ namespace Pudge_Plus.Classes
         public static string GetAttribute(string Attribute, string Context)
         {
             string ReturnVal;
-            string[] Splitter = Context.Split(new string[] { Attribute }, StringSplitOptions.None);
+            string[] Splitter = Context.Split(new string[] { "["+Attribute +"]"}, StringSplitOptions.None);
             string RemainingContent;
             if (Splitter.Length > 1)
                 RemainingContent = Splitter[1];
@@ -119,7 +119,43 @@ namespace Pudge_Plus.Classes
             }
             foreach (var line in File.ReadAllLines(Variables.Settings.FilePath))
             {
-                Print.Info(line);
+                string name = GetAttribute("Name", line);
+                int value = int.Parse(GetAttribute("Value", line));
+                switch (name)
+                {
+                    case "Basic ESP": Variables.Settings.Basic_ESP_Value.val = value; break;
+                    case "Combo Status": Variables.Settings.Combo_Status_Value.val = value; break;
+                    case "Maximum Damage Output": Variables.Settings.Maximum_Damage_Output_Value.val = value; break;
+                    case "Mana Required": Variables.Settings.Mana_Required_Value.val = value; break;
+                    case "Auto Hook": Variables.Settings.Auto_Hook_Value.val = value; break;
+                    case "Auto Combo": Variables.Settings.Auto_Combo_Value.val = value; break;
+                    case "Prediction": Variables.Settings.Prediction_Box_Value.val = value; break;
+                    case "Enemy Skills": Variables.Settings.Enemy_Skills_Value.val = value; break;
+                    case "Enemy Tracker": Variables.Settings.Enemy_Tracker_Value.val = value; break;
+                    case "Inventory Tracker": Variables.Settings.Inventory_Tracker_Value.val = value; break;
+                    case "Rune Tracker": Variables.Settings.Rune_Tracker_Value.val = value; break;
+                    case "Eul's Timer": Variables.Settings.Euls_Timer_Value.val = value; break;
+                    case "Last Hit Notifier": Variables.Settings.Last_Hit_Notifier_Value.val = value; break;
+                    case "Visible By Enemy": Variables.Settings.Visisble_By_Enemy_Value.val = value; break;
+                    case "Spirit Breaker Charge": Variables.Settings.Spirit_Breaker_Charge_Value.val = value; break;
+                    case "Skill Shot Notifier": Variables.Settings.Skill_Shot_Notifier_Value.val = value; break;
+                    case "Hook Lines": Variables.Settings.Hook_Lines_value.val = value; break;
+                }
+            }
+            Print.Success("Config Loaded");
+        }
+        public static void SaveConfig(Variables.CustomInteger foo)
+        {
+                var file = File.ReadAllLines(Variables.Settings.FilePath);
+                foreach (var s in file)
+                {
+                    string name = GetAttribute("Name", s);
+                if (foo == Variables.Settings.Auto_Combo_Value)
+                {
+                    string temp = s;
+                    temp = temp.Remove(temp.Length - 1);
+                    Print.Error(temp);
+                }
             }
         }
 
@@ -135,7 +171,7 @@ namespace Pudge_Plus.Classes
                 request1 = request1.Replace(" ", "%20");
                 HttpWebRequest request = (HttpWebRequest)WebRequest.Create(request1);
                 {
-                    request.Timeout = 5;
+                    request.Timeout = 5000;
                     request.Accept = "*/*";
                     request.Headers.Set(HttpRequestHeader.AcceptLanguage, "en-AU,en;q=0.7,fa;q=0.3");
                     request.Headers.Set(HttpRequestHeader.AcceptEncoding, "gzip, deflate");
@@ -153,7 +189,7 @@ namespace Pudge_Plus.Classes
             }
             catch(Exception ex)
             {
-               // Print.Info(ex.Message);
+                Print.Info(ex.Message);
                 Print.Error("Update failed... Trying again");
                 if (Variables.AttemptsRemaining > 0)
                 {

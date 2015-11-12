@@ -27,17 +27,20 @@ namespace Pudge_Plus.Classes
                     public int Index { get; set; }
                     public Variables.CustomInteger targetVariable { get; set; }
                     public string[] CustomText { get; set; }
-                    public int Value { get; set; }
-                  //  public int
+                    public int Max { get; set; }
+                    public int Min { get; set; }
+                    public string ToolTip { get; set; }
                 }
-                public static void Add(string text, ref Variables.CustomInteger targetVariable, int Min = 0, int Max = 2,string[] CustomOverride = null)
+                public static void Add(string text, ref Variables.CustomInteger targetVariable, string ToolTip,  int Min = 0, int Max = 1, string[] CustomOverride = null)
                 {
                     Item item = new Item();
                     item.Text = text;
                     item.Index = MenuIndex;
                     item.targetVariable = targetVariable;
                     item.CustomText = CustomOverride;
-                    item.Value = 0;
+                    item.Min = Min;
+                    item.Max = Max;
+                    item.ToolTip = ToolTip;
                     MenuItems.Add(item);
                     MenuIndex++;
                 }
@@ -55,7 +58,7 @@ namespace Pudge_Plus.Classes
                     
                     Vector2 tooltipBanner = new Vector2(StartingCoords.X, backdropUntil.Y + StartingCoords.Y - 12 - 5 -3); //
                     Drawing.DrawRect(tooltipBanner, new Vector2(Width, 12 + 5), Color.RoyalBlue); //Tooltip background
-                    Drawing.DrawText(ToolTip, new Vector2(tooltipBanner.X + Width/2 - ((ToolTip.ToCharArray().Length/2 * 5)), tooltipBanner.Y), Color.DarkGray, FontFlags.AntiAlias | FontFlags.Outline); //Tooltip text
+                    Drawing.DrawText(MenuItems[Variables.Settings.SelectedIndex].ToolTip, new Vector2(tooltipBanner.X + Width/2 - ((MenuItems[Variables.Settings.SelectedIndex].ToolTip.ToCharArray().Length/2 * 5)), tooltipBanner.Y), Color.DarkGray, FontFlags.AntiAlias | FontFlags.Outline); //Tooltip text
                     Drawing.DrawRect(StartingCoords, new Vector2(Width, (12 * MenuIndex) + 10 + 12 + 3 + 12), Color.DarkBlue, true); //Borderline
                     Drawing.DrawText(Title, TitleCoords, Color.LightSkyBlue, FontFlags.AntiAlias | FontFlags.Outline); // Title
                     Vector2 underLineStart = new Vector2(StartingCoords.X, StartingCoords.Y + 12 + 1);
@@ -72,24 +75,37 @@ namespace Pudge_Plus.Classes
                         Drawing.DrawText(option.Text, StartingCoords, color, FontFlags.AntiAlias | FontFlags.Outline);
                         Vector2 valueCoords = StartingCoords;
                         valueCoords.X = (Width + 10) - 12 - 5;
+                        string OptionText = "";
+                        Color optionColor = Color.Lime;
                         if (option.CustomText != null)
-                            Drawing.DrawText(option.CustomText[option.Value], valueCoords, Color.Lime, FontFlags.AntiAlias | FontFlags.Outline);
+                            OptionText = option.CustomText[option.targetVariable.val];
                         else
-                            Drawing.DrawText(option.Value.ToString(), valueCoords, Color.Lime, FontFlags.AntiAlias | FontFlags.Outline);
+                            OptionText = option.targetVariable.val.ToString();
+                        if (OptionText == option.Max.ToString())
+                            OptionText = "Off";
+                        if (OptionText == "Off")
+                            optionColor = Color.Red;
+
+                        Drawing.DrawText(OptionText, valueCoords, optionColor, FontFlags.AntiAlias | FontFlags.Outline);
                     }
                 }
                 public static class MenuControls
                 {
                     public static void Left()
                     {
-                       // if (MenuItems[Variables.Settings.SelectedIndex].
-                        MenuItems[Variables.Settings.SelectedIndex].Value--;
-                        MenuItems[Variables.Settings.SelectedIndex].targetVariable.val--;
+                        if (MenuItems[Variables.Settings.SelectedIndex].targetVariable.val > MenuItems[Variables.Settings.SelectedIndex].Min)
+                        {
+                            MenuItems[Variables.Settings.SelectedIndex].targetVariable.val--;
+                        }
+                        else
+                            MenuItems[Variables.Settings.SelectedIndex].targetVariable.val = MenuItems[Variables.Settings.SelectedIndex].Max;
                     }
                     public static void Right()
                     {
-                        MenuItems[Variables.Settings.SelectedIndex].Value++;
-                        MenuItems[Variables.Settings.SelectedIndex].targetVariable.val++;
+                        if (MenuItems[Variables.Settings.SelectedIndex].targetVariable.val < MenuItems[Variables.Settings.SelectedIndex].Max)
+                            MenuItems[Variables.Settings.SelectedIndex].targetVariable.val++;
+                        else
+                            MenuItems[Variables.Settings.SelectedIndex].targetVariable.val = MenuItems[Variables.Settings.SelectedIndex].Min;
                     }
                     public static void Down()
                     {
@@ -311,11 +327,14 @@ namespace Pudge_Plus.Classes
             {
                 public static void basic(Hero enemy)
                 {
-                    ESP.Draw.Enemy.Info(enemy, enemy.Player.Name, 0, Color.White, FontFlags.Outline | FontFlags.AntiAlias);
-                    ESP.Draw.Enemy.Info(enemy, int.Parse(enemy.Health.ToString()).ToString(), 1, Color.Red);
-                    ESP.Draw.Enemy.Info(enemy, " ," + Math.Round((Decimal)enemy.Mana, 0, MidpointRounding.AwayFromZero).ToString(), 1, Color.Blue, FontFlags.AntiAlias | FontFlags.Outline, enemy.Health.ToString().ToCharArray().Length * 6);
+                    if (Variables.Settings.Basic_ESP_Value.val == 0)
+                    {
+                        ESP.Draw.Enemy.Info(enemy, enemy.Player.Name, 0, Color.White, FontFlags.Outline | FontFlags.AntiAlias);
+                        ESP.Draw.Enemy.Info(enemy, int.Parse(enemy.Health.ToString()).ToString(), 1, Color.Red);
+                        ESP.Draw.Enemy.Info(enemy, " ," + Math.Round((Decimal)enemy.Mana, 0, MidpointRounding.AwayFromZero).ToString(), 1, Color.Blue, FontFlags.AntiAlias | FontFlags.Outline, enemy.Health.ToString().ToCharArray().Length * 6);
+                    }
                     int disCounter = 0;
-                    if (!Variables.CoolDownMethod) //Draw basic cool downs
+                    if (Variables.Settings.Enemy_Skills_Value.val == 2) //Draw basic cool downs
                         foreach (var skill in enemy.Spellbook.Spells)
                         {
                             if (skill.AbilityState == AbilityState.OnCooldown)
@@ -413,46 +432,53 @@ namespace Pudge_Plus.Classes
                             int counter = 0;
                             foreach (var spell in enemy.Spellbook.Spells)
                             {
+                                int Height = 20;
+                                if (Variables.Settings.Enemy_Skills_Value.val == 1)
+                                    Height = 0;
                                 if (spell == null || spell.Name == "attribute_bonus") continue;
                                 int Cooldown = (int)spell.Cooldown;
                                 //Print.Info(enemy.Name + " " + enemy.Spellbook.Spells.ToList().Count);
                                 Vector2 heroBase = Drawing.WorldToScreen(enemy.Position) + new Vector2(- ((20 * (enemy.Spellbook.Spells.ToList().Count -1)/2)) , 40); //Base drawing point
-                                Drawing.DrawRect(heroBase + new Vector2(counter * 20 - 5, 0), new Vector2(20, 20), Drawing.GetTexture(string.Format("materials/ensage_ui/spellicons/{0}.vmat", spell.Name ))); //Skill icons
-                                Drawing.DrawRect(heroBase + new Vector2(counter * 20 - 5, 20), new Vector2(20, Cooldown == 0 ? 6 : 22), new ColorBGRA(0, 0, 0, 100), true); //Skill box outlines
+                                if (Variables.Settings.Enemy_Skills_Value.val == 0)
+                                    Drawing.DrawRect(heroBase + new Vector2(counter * 20 - 5, 0), new Vector2(20, 20), Drawing.GetTexture(string.Format("materials/ensage_ui/spellicons/{0}.vmat", spell.Name ))); //Skill icons
+                                Drawing.DrawRect(heroBase + new Vector2(counter * 20 - 5, Height), new Vector2(20, Cooldown == 0 ? 6 : 22), new ColorBGRA(0, 0, 0, 100), true); //Skill box outlines
                                 if (spell.ManaCost > enemy.Mana) //Out of mana - Draw background Blue
-                                    Drawing.DrawRect(heroBase + new Vector2(counter * 20 - 5, 20), new Vector2(20, Cooldown == 0 ? 6 : 22), new ColorBGRA(0, 0, 150, 150));
+                                    Drawing.DrawRect(heroBase + new Vector2(counter * 20 - 5, Height), new Vector2(20, Cooldown == 0 ? 6 : 22), new ColorBGRA(0, 0, 150, 150));
                                 if (Cooldown > 0) //Draw cool down
                                 {
                                     var text = Cooldown.ToString();
                                     var textSize = Drawing.MeasureText(text, "Arial", new Vector2(10, 200), FontFlags.Outline | FontFlags.AntiAlias); //Measure text
-                                    var textPos = (heroBase + new Vector2(counter * 20 - 5, 20) - 1 + new Vector2(10 - textSize.X / 2, -textSize.Y / 2 + 12));
+                                    var textPos = (heroBase + new Vector2(counter * 20 - 5, Height) - 1 + new Vector2(10 - textSize.X / 2, -textSize.Y / 2 + 12));
                                     Drawing.DrawText(text, textPos, Color.White, FontFlags.AntiAlias | FontFlags.Outline);
                                 }
                                 if (spell.Level > 0)
                                     for (int lvl = 1; lvl <= spell.Level; lvl++)
 
-                                        Drawing.DrawRect(heroBase + new Vector2(counter * 20 - 5 + 3 * lvl, 22), new Vector2(2, 2), new ColorBGRA(255, 255, 0, 255), true); //Draw skill level
+                                        Drawing.DrawRect(heroBase + new Vector2(counter * 20 - 5 + 3 * lvl, Height + 2), new Vector2(2, 2), new ColorBGRA(255, 255, 0, 255), true); //Draw skill level
                                 counter++; //Skill index
                             }
-                            Item[] specialItems = { enemy.FindItem("item_blink"), enemy.FindItem("item_force_staff"), enemy.GetDagon()};
-                            foreach (var item in specialItems)
+                            if (Variables.Settings.Enemy_Skills_Value.val == 0)
                             {
-                                if (item != null)
+                                Item[] specialItems = { enemy.FindItem("item_blink"), enemy.FindItem("item_force_staff"), enemy.GetDagon() };
+                                foreach (var item in specialItems)
                                 {
-                                    int Cooldown = (int)item.Cooldown;
-                                    Vector2 heroBase = Drawing.WorldToScreen(enemy.Position) + new Vector2(-((20 * (enemy.Spellbook.Spells.ToList().Count - 1) / 2)), 40); //Base drawing point
-                                    Drawing.DrawRect(heroBase + new Vector2(counter * 20 - 5, 0), new Vector2(28, 20), Drawing.GetTexture(string.Format("materials/ensage_ui/items/{0}.vmat", item.Name.Remove(0,5)))); //Skill box outlines
-                                    Drawing.DrawRect(heroBase + new Vector2(counter * 20 - 5, 20), new Vector2(20, Cooldown == 0 ? 6 : 22), new ColorBGRA(0, 0, 0, 100), true); //Skill box outlines
-                                    if (item.ManaCost > enemy.Mana) //Out of mana - Draw background Blue
-                                        Drawing.DrawRect(heroBase + new Vector2(counter * 20 - 5, 20), new Vector2(20, Cooldown == 0 ? 6 : 22), new ColorBGRA(0, 0, 150, 150));
-                                    if (Cooldown > 0) //Draw cool down
+                                    if (item != null)
                                     {
-                                        var text = Cooldown.ToString();
-                                        var textSize = Drawing.MeasureText(text, "Arial", new Vector2(10, 200), FontFlags.Outline | FontFlags.AntiAlias); //Measure text
-                                        var textPos = (heroBase + new Vector2(counter * 20 - 5, 20) - 1 + new Vector2(10 - textSize.X / 2, -textSize.Y / 2 + 12));
-                                        Drawing.DrawText(text, textPos, Color.White, FontFlags.AntiAlias | FontFlags.Outline);
+                                        int Cooldown = (int)item.Cooldown;
+                                        Vector2 heroBase = Drawing.WorldToScreen(enemy.Position) + new Vector2(-((20 * (enemy.Spellbook.Spells.ToList().Count - 1) / 2)), 40); //Base drawing point
+                                        Drawing.DrawRect(heroBase + new Vector2(counter * 20 - 5, 0), new Vector2(28, 20), Drawing.GetTexture(string.Format("materials/ensage_ui/items/{0}.vmat", item.Name.Remove(0, 5)))); //Skill box outlines
+                                        Drawing.DrawRect(heroBase + new Vector2(counter * 20 - 5, 20), new Vector2(20, Cooldown == 0 ? 6 : 22), new ColorBGRA(0, 0, 0, 100), true); //Skill box outlines
+                                        if (item.ManaCost > enemy.Mana) //Out of mana - Draw background Blue
+                                            Drawing.DrawRect(heroBase + new Vector2(counter * 20 - 5, 20), new Vector2(20, Cooldown == 0 ? 6 : 22), new ColorBGRA(0, 0, 150, 150));
+                                        if (Cooldown > 0) //Draw cool down
+                                        {
+                                            var text = Cooldown.ToString();
+                                            var textSize = Drawing.MeasureText(text, "Arial", new Vector2(10, 200), FontFlags.Outline | FontFlags.AntiAlias); //Measure text
+                                            var textPos = (heroBase + new Vector2(counter * 20 - 5, 20) - 1 + new Vector2(10 - textSize.X / 2, -textSize.Y / 2 + 12));
+                                            Drawing.DrawText(text, textPos, Color.White, FontFlags.AntiAlias | FontFlags.Outline);
+                                        }
+                                        counter++; //Skill index
                                     }
-                                    counter++; //Skill index
                                 }
                             }
                         }
@@ -462,32 +488,45 @@ namespace Pudge_Plus.Classes
                 }
                 public static void pudge(Hero enemy)
                 {
-                    var opponent = enemy.Position;
-                    var distance = Math.Sqrt(Math.Pow((opponent.X - Variables.me.Position.X), 2) + Math.Pow((opponent.Y - Variables.me.Position.Y), 2)) - (enemy.HullRadius * 2);
-                    Color color;
-                    if (distance <= Variables.me.Spellbook.Spell1.CastRange)
-                        color = Color.Green;
-                    else if (distance <= Variables.me.Spellbook.Spell1.CastRange + 80)
-                        color = Color.Orange;
-                    else
-                        color = Color.Red;
-                    Drawing.DrawLine(Drawing.WorldToScreen(Variables.me.Position), Drawing.WorldToScreen(enemy.Position), color); //draw line between player and enemy
-                                                                                                                                  // PrintInfo(me.Distance2D(enemy.Position).ToString());
-                                                                                                                                  //PrintInfo("Drawing Line");
-                    var maxDmg = HookHandler.CalculateMaximumDamageOutput(Variables.me, enemy);
-                    var manaReq = HookHandler.CalculateManaRequired(Variables.me);
-                    string comboMessage = "null";
-                    if (enemy.Health - maxDmg <= 0)
-                        comboMessage = "Instant Death";
-                    else if (Variables.me.Mana - manaReq < 0)
-                        comboMessage = "Need " + (int)(manaReq - Variables.me.Mana) + " more mana";
-                    else if (maxDmg == 0)
-                        comboMessage = "No combo available";
-                    else
-                        comboMessage = "Wounded with " + (enemy.Health - maxDmg) + " hp left";
-                    ESP.Draw.Enemy.Info(enemy, comboMessage, 2, Color.Lime); //combo predict
-                    ESP.Draw.Enemy.Info(enemy, maxDmg.ToString(), 3, Color.Orange); //dmg calc
-                    ESP.Draw.Enemy.Info(enemy, HookHandler.CalculateManaRequired(Variables.me).ToString(), 4, Color.Cyan); //mana calc
+                    if (Variables.Settings.Hook_Lines_value.val == 0)
+                    {
+                        var opponent = enemy.Position;
+                        var distance = Math.Sqrt(Math.Pow((opponent.X - Variables.me.Position.X), 2) + Math.Pow((opponent.Y - Variables.me.Position.Y), 2)) - (enemy.HullRadius * 2);
+                        Color color;
+                        if (distance <= Variables.me.Spellbook.Spell1.CastRange)
+                            color = Color.Green;
+                        else if (distance <= Variables.me.Spellbook.Spell1.CastRange + 80)
+                            color = Color.Orange;
+                        else
+                            color = Color.Red;
+                        Drawing.DrawLine(Drawing.WorldToScreen(Variables.me.Position), Drawing.WorldToScreen(enemy.Position), color); //draw line between player and enemy
+                                                                                                                                      // PrintInfo(me.Distance2D(enemy.Position).ToString());
+                                                                                                                                      //PrintInfo("Drawing Line");
+                    }
+                    int maxDmg = -99;
+                    if (Variables.Settings.Combo_Status_Value.val == 0)
+                    {
+                         maxDmg= HookHandler.CalculateMaximumDamageOutput(Variables.me, enemy);
+                        var manaReq = HookHandler.CalculateManaRequired(Variables.me);
+                        string comboMessage = "null";
+                        if (enemy.Health - maxDmg <= 0)
+                            comboMessage = "Instant Death";
+                        else if (Variables.me.Mana - manaReq < 0)
+                            comboMessage = "Need " + (int)(manaReq - Variables.me.Mana) + " more mana";
+                        else if (maxDmg == 0)
+                            comboMessage = "No combo available";
+                        else
+                            comboMessage = "Wounded with " + (enemy.Health - maxDmg) + " hp left";
+                        ESP.Draw.Enemy.Info(enemy, comboMessage, 2, Color.Lime); //combo predict
+                    }
+                    if (Variables.Settings.Maximum_Damage_Output_Value.val == 0)
+                    {
+                        if (maxDmg == -99)
+                            maxDmg = HookHandler.CalculateMaximumDamageOutput(Variables.me, enemy);
+                        ESP.Draw.Enemy.Info(enemy, maxDmg.ToString(), 3, Color.Orange); //dmg calc
+                    }
+                    if (Variables.Settings.Mana_Required_Value.val == 0)
+                         ESP.Draw.Enemy.Info(enemy, HookHandler.CalculateManaRequired(Variables.me).ToString(), 4, Color.Cyan); //mana calc
                 }
 
                 public static void zeus(Hero enemy)
@@ -520,6 +559,7 @@ namespace Pudge_Plus.Classes
                     var y = predict.PredictedLocation.Y;
                     Color textC = Color.Green;
                     string displayText = "Prediction";
+                    if (Variables.Settings.Auto_Hook_Value.val == 0)
                     if (predict.closest)
                     {
                         textC = Color.Red;

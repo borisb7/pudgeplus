@@ -18,25 +18,25 @@ namespace Pudge_Plus.Classes
             #region Combo
             foreach (var mod in enemy.Modifiers)
             {
-                if (mod.Name == "modifier_eul_cyclone")
-                {
-                    ESP.Draw.HookEuls(enemy);
-                }
-                if (mod.Name.ToUpper().Contains("PUDGE"))
-                {
-                    //enemy.AddParticleEffect("particles/" + "items_fx/aura_shivas" + ".vpcf");
-                    
-                    if (Utils.SleepCheck("pragmaOnce"))
+                if (Variables.Settings.Euls_Timer_Value.val == 0)
+                    if (mod.Name == "modifier_eul_cyclone")
+                        ESP.Draw.HookEuls(enemy);
+                if (Variables.Settings.Auto_Combo_Value.val == 0)
+                    if (mod.Name.ToUpper().Contains("PUDGE"))
                     {
-                        switch (mod.Name)
+                        //enemy.AddParticleEffect("particles/" + "items_fx/aura_shivas" + ".vpcf");
+
+                        if (Utils.SleepCheck("pragmaOnce"))
                         {
-                            case "modifier_pudge_meat_hook":
-                                QueueCombo(enemy);
-                                Utils.Sleep(3000, "pragmaOnce");
-                                break;
+                            switch (mod.Name)
+                            {
+                                case "modifier_pudge_meat_hook":
+                                    QueueCombo(enemy);
+                                    Utils.Sleep(3000, "pragmaOnce");
+                                    break;
+                            }
                         }
                     }
-                }
             }
             #endregion
         }
@@ -254,21 +254,24 @@ namespace Pudge_Plus.Classes
                             var foobar1 = DistanceFromMeToPredict / Variables.HookSpeed;
                             if (foobar1 >= t * .8 && foobar1 <= t * 1.2)
                             {
-                              //  Print.Info(Drawing.WorldToScreen(StraightDis3D1).ToString() + " | " + StraightDis1.ToString());
-                                if (Utils.SleepCheck("hook") && (Variables.HookForMe))
+                                //  Print.Info(Drawing.WorldToScreen(StraightDis3D1).ToString() + " | " + StraightDis1.ToString());
+                                if (Variables.Settings.Auto_Hook_Value.val == 0)
                                 {
-                                    Print.Info("casting hook");
-                                    Variables.HookLocationDrawer = true;
-                                    Variables.EnemyLocation = Drawing.WorldToScreen(enemy.Position);
-                                    Variables.AutoHookLocation = Drawing.WorldToScreen(StraightDis3D1);
-                                    Variables.PredictionLocation = StraightDis1;
-                                    //Variables.me.Spellbook.Spell1.UseAbility(StraightDis3D1); //Hook based on prediction location (buggy)
-                                    Variables.me.Spellbook.Spell1.CastSkillShot(enemy); //Ensage skill shot caster (temp solution untill fix)
-                                    Utils.Sleep(1000, "hook");
-                                    Variables.HookForMe = false;
+                                    if (Utils.SleepCheck("hook") && (Variables.HookForMe))
+                                    {
+                                        Print.Info("casting hook");
+                                        Variables.HookLocationDrawer = true;
+                                        Variables.EnemyLocation = Drawing.WorldToScreen(enemy.Position);
+                                        Variables.AutoHookLocation = Drawing.WorldToScreen(StraightDis3D1);
+                                        Variables.PredictionLocation = StraightDis1;
+                                        //Variables.me.Spellbook.Spell1.UseAbility(StraightDis3D1); //Hook based on prediction location (buggy)
+                                        Variables.me.Spellbook.Spell1.CastSkillShot(enemy); //Ensage skill shot caster (temp solution untill fix)
+                                        Utils.Sleep(1000, "hook");
+                                        Variables.HookForMe = false;
+                                    }
+                                    if (ESP.Calculate.Enemy.ClosestToMouse(me).Player.Name == enemy.Player.Name)
+                                        pre.closest = true;
                                 }
-                                if (ESP.Calculate.Enemy.ClosestToMouse(me).Player.Name == enemy.Player.Name)
-                                    pre.closest = true;
                                 pre.PredictedLocation = StraightDis1;
                                 return pre;
                                 break;

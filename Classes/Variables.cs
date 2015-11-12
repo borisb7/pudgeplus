@@ -66,9 +66,29 @@ namespace Pudge_Plus.Classes
         //
         public class Settings
         {
+            public static string[] OnOff = new string[] { "On", "Off" };
             public static string FilePath = string.Format(@"{0}\Pudge+\Settings.txt", Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData));
-            public static string[] DefaultConfig = { "[Name]Basic ESP[Value]0" , "[Name]Combo Status[Value]0", "[Name]Maximum Damage Output[Value]0", "[Name]Mana Required[Value]0", "[Name]Auto Hook[Value]0", "[Name]Auto Combo[Value]0", "[Name]Prediction Box[Value]0", "[Name]Enemy Skills[Value]0", "[Name]Enemy Tracker[Value]0", "[Name]Inventory Tracker[Value]0", "[Name]Rune Tracker[Value]0", "[Name]Rune Tracker[Value]0", "[Name]Eul's Timer[Value]0", "[Name]Last Hit Notifier[Value]0", "[Name]Visible By Enemy[Value]0", "[Name]Last Hit Notifier[Value]0" };
-            public static CustomInteger Basic_ESP_Value = new CustomInteger(0);// EspBasicValueSave);
+            public static string[] DefaultConfig = { "[Name]Basic ESP[Value]0" , "[Name]Combo Status[Value]0", "[Name]Maximum Damage Output[Value]0", "[Name]Mana Required[Value]0", "[Name]Auto Hook[Value]0", "[Name]Auto Combo[Value]0",
+                "[Name]Prediction Box[Value]0", "[Name]Enemy Skills[Value]0", "[Name]Enemy Tracker[Value]0", "[Name]Inventory Tracker[Value]0", "[Name]Rune Tracker[Value]0", "[Name]Eul's Timer[Value]0", "[Name]Teleport Timer[Value]0",
+                "[Name]Last Hit Notifier[Value]0", "[Name]Visible By Enemy[Value]0", "[Name]Spirit Breaker Charge[Value]0", "[Name]Skill Shot Notifier[Value]0", "[Name]Hook Lines[Value]0" };
+            public static CustomInteger Basic_ESP_Value = new CustomInteger(0);
+            public static CustomInteger Combo_Status_Value = new CustomInteger(0);
+            public static CustomInteger Maximum_Damage_Output_Value = new CustomInteger(0);
+            public static CustomInteger Mana_Required_Value = new CustomInteger(0);
+            public static CustomInteger Auto_Hook_Value = new CustomInteger(0);
+            public static CustomInteger Auto_Combo_Value = new CustomInteger(0);
+            public static CustomInteger Prediction_Box_Value = new CustomInteger(0);
+            public static CustomInteger Enemy_Skills_Value = new CustomInteger(0);
+            public static CustomInteger Enemy_Tracker_Value = new CustomInteger(0);
+            public static CustomInteger Inventory_Tracker_Value = new CustomInteger(0);
+            public static CustomInteger Rune_Tracker_Value = new CustomInteger(0);
+            public static CustomInteger Euls_Timer_Value = new CustomInteger(0);
+            public static CustomInteger Teleport_Timer_Value = new CustomInteger(0);
+            public static CustomInteger Last_Hit_Notifier_Value = new CustomInteger(0);
+            public static CustomInteger Visisble_By_Enemy_Value = new CustomInteger(0);
+            public static CustomInteger Spirit_Breaker_Charge_Value = new CustomInteger(0);
+            public static CustomInteger Skill_Shot_Notifier_Value = new CustomInteger(0);
+            public static CustomInteger Hook_Lines_value = new CustomInteger(0);
             public static int SelectedIndex = 0;
             public static bool ShowMenu = true;
         }
