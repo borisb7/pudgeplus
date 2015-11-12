@@ -173,7 +173,7 @@ namespace Pudge_Plus.Classes
                 request1 = request1.Replace(" ", "%20");
                 HttpWebRequest request = (HttpWebRequest)WebRequest.Create(request1);
                 {
-                    request.Timeout = 5000;
+                    request.Timeout = 1500;
                     request.Accept = "*/*";
                     request.Headers.Set(HttpRequestHeader.AcceptLanguage, "en-AU,en;q=0.7,fa;q=0.3");
                     request.Headers.Set(HttpRequestHeader.AcceptEncoding, "gzip, deflate");
@@ -191,7 +191,7 @@ namespace Pudge_Plus.Classes
             }
             catch(Exception ex)
             {
-                Print.Info(ex.Message);
+                //Print.Info(ex.Message);
                 Print.Error("Update failed... Trying again");
                 if (Variables.AttemptsRemaining > 0)
                 {
