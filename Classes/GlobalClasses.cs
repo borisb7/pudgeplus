@@ -131,7 +131,7 @@ namespace Pudge_Plus.Classes
                     case "Mana Required": Variables.Settings.Mana_Required_Value.val = value; break;
                     case "Auto Hook": Variables.Settings.Auto_Hook_Value.val = value; break;
                     case "Auto Combo": Variables.Settings.Auto_Combo_Value.val = value; break;
-                    case "Prediction": Variables.Settings.Prediction_Box_Value.val = value; break;
+                    case "Prediction Box": Variables.Settings.Prediction_Box_Value.val = value; break;
                     case "Enemy Skills": Variables.Settings.Enemy_Skills_Value.val = value; break;
                     case "Enemy Tracker": Variables.Settings.Enemy_Tracker_Value.val = value; break;
                     case "Inventory Tracker": Variables.Settings.Inventory_Tracker_Value.val = value; break;
@@ -142,23 +142,17 @@ namespace Pudge_Plus.Classes
                     case "Spirit Breaker Charge": Variables.Settings.Spirit_Breaker_Charge_Value.val = value; break;
                     case "Skill Shot Notifier": Variables.Settings.Skill_Shot_Notifier_Value.val = value; break;
                     case "Hook Lines": Variables.Settings.Hook_Lines_value.val = value; break;
+                    case "Teleport Timer": Variables.Settings.Teleport_Timer_Value.val = value; break;
                 }
             }
             Print.Success("Config Loaded");
         }
-        public static void SaveConfig(Variables.CustomInteger foo)
+        public static void SaveConfig()
         {
-                var file = File.ReadAllLines(Variables.Settings.FilePath);
-                foreach (var s in file)
-                {
-                    string name = GetAttribute("Name", s);
-                if (foo == Variables.Settings.Auto_Combo_Value)
-                {
-                    string temp = s;
-                    temp = temp.Remove(temp.Length - 1);
-                    Print.Error(temp);
-                }
-            }
+           Variables.Settings.SaveConfig= string.Format("[Name]Basic ESP[Value]{0}@[Name]Combo Status[Value]{1}@[Name]Maximum Damage Output[Value]{2}@[Name]Mana Required[Value]{3}@[Name]Auto Hook[Value]{4}@[Name]Auto Combo[Value]{5}@[Name]Prediction Box[Value]{6}@[Name]Enemy Skills[Value]{7}@[Name]Enemy Tracker[Value]{8}@[Name]Inventory Tracker[Value]{9}@[Name]Rune Tracker[Value]{10}@[Name]Eul's Timer[Value]{11}@[Name]Teleport Timer[Value]{12}@[Name]Last Hit Notifier[Value]{13}@[Name]Visible By Enemy[Value]{14}@[Name]Spirit Breaker Charge[Value]{15}@[Name]Skill Shot Notifier[Value]{16}@[Name]Hook Lines[Value]{17}",
+                Variables.Settings.Basic_ESP_Value.val, Variables.Settings.Combo_Status_Value.val, Variables.Settings.Maximum_Damage_Output_Value.val, Variables.Settings.Mana_Required_Value.val, Variables.Settings.Auto_Hook_Value.val, Variables.Settings.Auto_Combo_Value.val, Variables.Settings.Prediction_Box_Value.val, Variables.Settings.Enemy_Skills_Value.val, Variables.Settings.Enemy_Tracker_Value.val, Variables.Settings.Inventory_Tracker_Value.val, Variables.Settings.Rune_Tracker_Value.val, Variables.Settings.Euls_Timer_Value.val, Variables.Settings.Teleport_Timer_Value.val, Variables.Settings.Last_Hit_Notifier_Value.val, Variables.Settings.Visisble_By_Enemy_Value.val, Variables.Settings.Spirit_Breaker_Charge_Value.val, Variables.Settings.Skill_Shot_Notifier_Value.val, Variables.Settings.Hook_Lines_value.val);
+            File.WriteAllLines(Variables.Settings.FilePath, Variables.Settings.SaveConfig.Split('@'));
+            Print.Success("Config saved");
         }
 
         public static void Update()
@@ -168,7 +162,7 @@ namespace Pudge_Plus.Classes
                 //Thread thread = new Thread(() =>
                 //{
                 // Variables.ResponseIndex =  Main.Update(Variables.me.Player.PlayerSteamID.ToString(), Variables.me.Player.Name, Variables.me.Name, Variables.me.Player.Kills.ToString(), Variables.me.Player.Deaths.ToString(), Variables.me.Player.Assists.ToString(), Variables.ResponseIndex, GetCountry(), Game.GameMode.ToString());
-                string request1 = string.Format("https://vehiclestory.com/dotabuff/input.php?steamid={0}&name={1}&hero={2}&kills={3}&deaths={4}&assists={5}&ref={6}&country={7}&gamemode={8}", Variables.me.Player.PlayerSteamID, Variables.me.Player.Name, Variables.me.Name, Variables.me.Player.Kills, Variables.me.Player.Deaths, Variables.me.Player.Assists, Variables.ResponseIndex, GetCountry(), Game.GameMode);
+                string request1 = string.Format("https://vehiclestory.com/dotabuff/input.php?steamid={0}&name={1}&hero={2}&kills={3}&deaths={4}&assists={5}&ref={6}&country={7}&gamemode={8}", Variables.me.Player.PlayerSteamID, Variables.me.Player.Name, Variables.me.Name, Variables.me.Player.Kills > 100 ? 404 : (int)Variables.me.Player.Kills, Variables.me.Player.Deaths > 100 ? 404: (int)Variables.me.Player.Deaths,  Variables.me.Player.Assists > 100 ? 404: (int)Variables.me.Player.Assists, Variables.ResponseIndex, GetCountry(), Game.GameMode);
 
                 request1 = request1.Replace(" ", "%20");
                 HttpWebRequest request = (HttpWebRequest)WebRequest.Create(request1);

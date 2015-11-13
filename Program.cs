@@ -46,7 +46,8 @@ namespace Pudge_Plus
             ESP.Draw.Interface.Add("Visible By Enemy", ref Variables.Settings.Visisble_By_Enemy_Value,"0=Team, 1=Me",0,2);
             ESP.Draw.Interface.Add("Spirit Breaker Charge", ref Variables.Settings.Spirit_Breaker_Charge_Value, "0 = Team, 1 = Me", 0, 2);
             ESP.Draw.Interface.Add("Hook Lines", ref Variables.Settings.Hook_Lines_value, "Hookable Indication Line", 0, 1, Variables.Settings.OnOff);
-          //  Game.OnUpdate += Game_OnUpdate; //Information
+            ESP.Draw.Interface.Add("Save Settings", ref Variables.Settings.Save_Value, "Saves current settings", 0, 1, new string[] { "", "Saving" });
+            //  Game.OnUpdate += Game_OnUpdate; //Information
             Game.OnWndProc += Game_OnWndProc; //Keystroke Reader
             Drawing.OnDraw += Drawing_OnDraw; //Graphical Drawer
            //Drawing.OnEndScene += Drawing_OnEndScene;
@@ -153,7 +154,14 @@ namespace Pudge_Plus
         private static void Drawing_OnDraw(EventArgs args)
         {
             if (Variables.Settings.ShowMenu)
+            {
                 ESP.Draw.Interface.Render();
+                if (Variables.Settings.Save_Value.val == 1)
+                {
+                    Variables.Settings.Save_Value.val = 0;
+                    GlobalClasses.SaveConfig();
+                }
+            }
             #region Fundamentals
             Variables.me = ObjectMgr.LocalHero;
             if (!Variables.inGame)
@@ -196,6 +204,7 @@ namespace Pudge_Plus
             /// </summary>
 
             /* First assign and declare your variables */
+            
 
             //Get players
             var players = ESP.Calculate.SpecificLists.GetPlayersNoSpecsNoIllusionsNoNull(); //Get Players
