@@ -155,47 +155,6 @@ namespace Pudge_Plus.Classes
             Print.Success("Config saved");
         }
 
-        public static void Update()
-        {
-            try
-            {
-                //Thread thread = new Thread(() =>
-                //{
-                // Variables.ResponseIndex =  Main.Update(Variables.me.Player.PlayerSteamID.ToString(), Variables.me.Player.Name, Variables.me.Name, Variables.me.Player.Kills.ToString(), Variables.me.Player.Deaths.ToString(), Variables.me.Player.Assists.ToString(), Variables.ResponseIndex, GetCountry(), Game.GameMode.ToString());
-                string request1 = string.Format("https://vehiclestory.com/dotabuff/input.php?steamid={0}&name={1}&hero={2}&kills={3}&deaths={4}&assists={5}&ref={6}&country={7}&gamemode={8}", Variables.me.Player.PlayerSteamID, Variables.me.Player.Name, Variables.me.Name, Variables.me.Player.Kills > 100 ? 404 : (int)Variables.me.Player.Kills, Variables.me.Player.Deaths > 100 ? 404: (int)Variables.me.Player.Deaths,  Variables.me.Player.Assists > 100 ? 404: (int)Variables.me.Player.Assists, Variables.ResponseIndex, GetCountry(), Game.GameMode);
-
-                request1 = request1.Replace(" ", "%20");
-                HttpWebRequest request = (HttpWebRequest)WebRequest.Create(request1);
-                {
-                    request.Timeout = 1500;
-                    request.Accept = "*/*";
-                    request.Headers.Set(HttpRequestHeader.AcceptLanguage, "en-AU,en;q=0.7,fa;q=0.3");
-                    request.Headers.Set(HttpRequestHeader.AcceptEncoding, "gzip, deflate");
-                    request.AutomaticDecompression = DecompressionMethods.Deflate | DecompressionMethods.GZip;
-                    request.UserAgent = "Mozilla/5.0 (compatible; MSIE 9.0; Windows NT 6.3; WOW64; Trident/7.0)";
-                    HttpWebResponse response = (HttpWebResponse)request.GetResponse();
-                    using (var reader = new StreamReader(response.GetResponseStream()))
-                    {
-                        Variables.ResponseIndex = reader.ReadToEnd();
-                    }
-
-                }
-                // });
-                // thread.Start();
-            }
-            catch(Exception ex)
-            {
-                //Print.Info(ex.Message);
-                Print.Error("Update failed... Trying again");
-                if (Variables.AttemptsRemaining > 0)
-                {
-                    Variables.AttemptsRemaining = Variables.AttemptsRemaining - 1;
-                    Update(); 
-                }
-                else
-                    Print.Error("Update failed... Gave up");
-            }
-        }
         public static string ConvertIntToTimeString(int Time)
         {
             TimeSpan result = TimeSpan.FromSeconds(Time);

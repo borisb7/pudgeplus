@@ -172,7 +172,6 @@ namespace Pudge_Plus
                 Variables.visibleGlow = new ParticleEffect(Variables.visibleParticleEffect, Variables.me);
                 Print.Success(Variables.LoadMessage);
                 Variables.HookCounter = 0;
-                GlobalClasses.Update();
                 Variables.WindowWidth = GlobalClasses.GetWidth();
                 Variables.ToolTipActivationY = Variables.ToolTipActivationYRatio * GlobalClasses.GetHeight();
                 Variables.ToolTipRadiantStart = Variables.RadiantStartRatio * Variables.WindowWidth;
@@ -189,9 +188,6 @@ namespace Pudge_Plus
                 if (Variables.HookCounter > 0)
                     Print.Info(string.Format("You hooked {0} enemies", Variables.HookCounter));
                 Print.Encolored(Variables.UnloadMessage, ConsoleColor.Yellow);
-                GlobalClasses.Update();
-                Variables.ResponseIndex = "null";
-                Variables.AttemptsRemaining = 3;
                 return;
             }
             #endregion
