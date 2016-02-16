@@ -182,6 +182,8 @@ namespace Pudge_Plus.Classes
                 if (eblade != null)
                 {
                     int dmg = (int)(((me.TotalStrength  + 75) * 2) * resis);
+                    if (Variables.AetherLens)
+                        dmg = (int)(dmg * 1.08);
                     theoreticalMana -= eblade.ManaCost;
                     Damage += dmg;
                    // Print.Info(dmg.ToString());
@@ -214,14 +216,13 @@ namespace Pudge_Plus.Classes
                         else
                         {
                             var damagePerTickAfterResis = ultiDamage * resis;
+                            if (Variables.AetherLens)
+                                damagePerTickAfterResis = (float)(damagePerTickAfterResis * 1.08);
                             ultiDamage = damagePerTickAfterResis * 3;
                         }
                         Damage += (int)ultiDamage;
                         theoreticalMana -= dismember.ManaCost;
                     }
-
-
-
                     if (urn != null)
                         if (urn.CurrentCharges > 0)
                             Damage += 100;
