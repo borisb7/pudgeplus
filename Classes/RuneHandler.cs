@@ -33,6 +33,7 @@ namespace Pudge_Plus.Classes
                     case "Haste": cus.color = Color.Red; break;
                     case "Bounty": cus.color = Color.Orange; break;
                     case "Regeneration": cus.color = Color.Lime; break;
+                    case "Arcane": cus.color = Color.MediumPurple; break;
                     default: cus.color = Color.Green; cus.RuneType = "UNHANDELED RUNE"; break;
                 }
                 return cus;
@@ -55,7 +56,7 @@ namespace Pudge_Plus.Classes
                     Print.Info("Rune found");
                 switch (r.Position.X.ToString())
                 {
-                    case "2988": //Bot Rune
+                    case "2812.563": //Bot Rune
                         if (!Variables.BottomRune.current) //if rune should be updated
                         {
                             if (Variables.DeveloperMode)
@@ -64,7 +65,7 @@ namespace Pudge_Plus.Classes
                             Variables.BottomRune.current = true;
                         }
                         break;
-                    case "-2271.531": //Top Rune
+                    case "-2237.438": //Top Rune
                         if (!Variables.TopRune.current) //if rune should be updated
                         {
                             if (Variables.DeveloperMode)
@@ -73,6 +74,7 @@ namespace Pudge_Plus.Classes
                             Variables.TopRune.current = true;
                         }
                         break;
+                  //  default: Print.Success(r.Position.X.ToString()); break;
                 }
                 if (Variables.TopRune.current && Variables.BottomRune.current)
                 {
