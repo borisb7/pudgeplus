@@ -25,7 +25,7 @@ namespace Pudge_Plus.Classes
                     if (mod.Name.ToUpper().Contains("PUDGE"))
                     {
                         //enemy.AddParticleEffect("particles/" + "items_fx/aura_shivas" + ".vpcf");
-
+                       
                         if (Utils.SleepCheck("pragmaOnce"))
                         {
                             switch (mod.Name)
@@ -41,14 +41,56 @@ namespace Pudge_Plus.Classes
             #endregion
         }
         
-        private static void QueueCombo(Hero enemy)
+        public static void QueueCombo(Hero enemy)
+        {
+        //    for (int i = 0; i != 5; i++)
+         //   {
+                var rot = Variables.me.Spellbook.SpellW;
+                var dismember = Variables.me.Spellbook.SpellR;
+                var urn = Variables.me.FindItem("item_urn_of_shadows");
+                var eblade = Variables.me.FindItem("item_ethereal_blade");
+                var dagon = Variables.me.GetDagon();
+                Print.Error(string.Format("[{0}]", GlobalClasses.GetHeroNameFromLongHeroName(enemy.Name)));
+                Variables.HookCounter++;
+                if (!rot.IsToggled && rot.Level > 0) //rot
+                {
+                    rot.ToggleAbility();
+                    Print.Info("Queued Rot");
+                }
+                if (urn != null) //urn
+                {
+                    if (urn.CurrentCharges > 0)
+                    {
+                        urn.UseAbility(enemy, true);
+                        Print.Info("Queued Urn");
+                    }
+                }
+                if (eblade != null) //eblade
+                {
+                    eblade.UseAbility(enemy, true);
+                    Print.Info("Queued Eblade");
+                }
+                if (dagon != null) //dagon
+                {
+                    dagon.UseAbility(enemy, true);
+                    Print.Info("Queued Dagon");
+                }
+                if (dismember.Level > 0 && dismember.AbilityState == AbilityState.Ready) //dismember (ulti)
+                {
+                    dismember.UseAbility(enemy, true);
+                    Print.Info("Queued Dismember");
+                }
+                Print.Error(string.Format("[{0}]", GlobalClasses.GetHeroNameFromLongHeroName(enemy.Name)));
+           // }
+        }
+        public static void QueueCombo(Unit enemy)
         {
             var rot = Variables.me.Spellbook.SpellW;
             var dismember = Variables.me.Spellbook.SpellR;
             var urn = Variables.me.FindItem("item_urn_of_shadows");
             var eblade = Variables.me.FindItem("item_ethereal_blade");
             var dagon = Variables.me.GetDagon();
-            Print.Error(string.Format("[{0}]",GlobalClasses.GetHeroNameFromLongHeroName(enemy.Name)));
+            Print.Error(string.Format("[{0}]", GlobalClasses.GetHeroNameFromLongHeroName(enemy.Name)));
             Variables.HookCounter++;
             if (!rot.IsToggled && rot.Level > 0) //rot
             {
@@ -80,6 +122,8 @@ namespace Pudge_Plus.Classes
             }
             Print.Error(string.Format("[{0}]", GlobalClasses.GetHeroNameFromLongHeroName(enemy.Name)));
         }
+
+
         public static int CalculateManaRequired(Hero me)
         {
             try
@@ -116,7 +160,6 @@ namespace Pudge_Plus.Classes
         {
             try
             {
-                //NEED TO ADD EBLADE!!!!
                 var hook = me.Spellbook.Spell1;
                 var rot = me.Spellbook.SpellW;
                 var dismember = me.Spellbook.SpellR;
@@ -130,6 +173,9 @@ namespace Pudge_Plus.Classes
                 if (hook != null)
                     if (hook.Level > 0 && theoreticalMana - hook.ManaCost >= 0 && hook.AbilityState == AbilityState.Ready)
                     {
+                        if (me.AghanimState())
+                            Damage += (int)hook.AbilityData.FirstOrDefault(x => x.Name == "damage_scepter").GetValue(hook.Level - 1);
+                        else
                         Damage += (int)hook.AbilityData.FirstOrDefault(x => x.Name == "#AbilityDamage").GetValue(hook.Level - 1);
                         theoreticalMana -= hook.ManaCost;
                     }
@@ -149,15 +195,26 @@ namespace Pudge_Plus.Classes
                         {
                             var rotDPS = (int)rot.AbilityData.FirstOrDefault(x => x.Name == "#AbilityDamage").GetValue(rot.Level - 1);
                             var totalDmgAfterResis = (rotDPS * 3) * resis;
+                            if (Variables.AetherLens)
+                                totalDmgAfterResis = (float)(totalDmgAfterResis * 1.08);
                             Damage += (int)totalDmgAfterResis;
 
                         }
                         var ultiDamage = dismember.AbilityData.FirstOrDefault(x => x.Name == "dismember_damage").GetValue(dismember.Level - 1);
                         if (me.AghanimState())
                         {
-                            var scepterDamage = ultiDamage + (me.TotalStrength * dismember.AbilityData.FirstOrDefault(x => x.Name == "strength_damage_scepter").GetValue(dismember.Level - 1));
+                            //ultiDamage += (float)(me.TotalStrength * (0.2 + (dismember.Level * 0.10)));
+
+                            var scepterDamage = ultiDamage + (me.TotalStrength * (0.2 + (dismember.Level * 0.10)));//ultiDamage + (me.TotalStrength * dismember.AbilityData.FirstOrDefault(x => x.Name == "strength_damage_scepter").GetValue(dismember.Level - 1));
                             var totalDamageAfterResis = scepterDamage * resis;
-                            ultiDamage = totalDamageAfterResis * 3;
+                            if (Variables.AetherLens)
+                                totalDamageAfterResis = (float)(totalDamageAfterResis * 1.08);
+                            ultiDamage = (float)totalDamageAfterResis * 3;
+                        }
+                        else
+                        {
+                            var damagePerTickAfterResis = ultiDamage * resis;
+                            ultiDamage = damagePerTickAfterResis * 3;
                         }
                         Damage += (int)ultiDamage;
                         theoreticalMana -= dismember.ManaCost;
@@ -172,7 +229,10 @@ namespace Pudge_Plus.Classes
                         if (dagon != null && theoreticalMana - dagon.ManaCost >= 0 && dagon.AbilityState == AbilityState.Ready)
                         {
                             var dagonDamageAfterResis = (int)dagon.AbilityData.FirstOrDefault(x => x.Name == "damage").GetValue(dagon.Level - 1) * resis;
+                            if (Variables.AetherLens)
+                                dagonDamageAfterResis = (float)(dagonDamageAfterResis * 1.08);
                             Damage += (int)dagonDamageAfterResis;
+                            
                             theoreticalMana -= dagon.ManaCost;
                         }
                 }
@@ -184,7 +244,7 @@ namespace Pudge_Plus.Classes
             }
             catch (Exception ex)
             {
-            //    Print.Error("DAMAGE: " + ex.Message);
+                Print.Error("DAMAGE: " + ex.Message);
                 return 0;
             }
         }
@@ -264,8 +324,19 @@ namespace Pudge_Plus.Classes
                                         Variables.EnemyLocation = Drawing.WorldToScreen(enemy.Position);
                                         Variables.AutoHookLocation = Drawing.WorldToScreen(StraightDis3D1);
                                         Variables.PredictionLocation = StraightDis1;
+                                        //
+                                        if (Variables.DeveloperMode)
+                                        {
+                                            Variables.hookData.MyPos2D = Drawing.WorldToScreen(Variables.me.Position);
+                                            Variables.hookData.MyPos3D = Variables.me.Position;
+                                            Variables.hookData.Prediction2D = StraightDis1;
+                                            Variables.hookData.Prediction3D = StraightDis3D1;
+                                            Variables.hookData.Enabled = true;
+                                        }
+                                        //
                                         //Variables.me.Spellbook.Spell1.UseAbility(StraightDis3D1); //Hook based on prediction location (buggy)
                                         Variables.me.Spellbook.Spell1.CastSkillShot(enemy); //Ensage skill shot caster (temp solution untill fix)
+                                        
                                         Utils.Sleep(1000, "hook");
                                         Variables.HookForMe = false;
                                     }

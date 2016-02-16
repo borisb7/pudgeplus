@@ -10,6 +10,8 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Threading;
 using System.Runtime.InteropServices;
+using Ensage.Common.Extensions;
+using Ensage.Common;
 
 namespace Pudge_Plus.Classes
 {
@@ -28,6 +30,33 @@ namespace Pudge_Plus.Classes
             public int Top;
             public int Right;
             public int Bottom;
+        }
+        public class HookData
+        {
+            public Vector2 Prediction2D { get; set; }
+            public Vector3 Prediction3D { get; set; }
+            public Vector2 MyPos2D { get; set; }
+            public Vector3 MyPos3D { get; set; }
+            public bool Enabled = false;
+        }
+        public static Vector3 PredictXYZ(Unit unit, float delay)
+        {
+            Vector3 vector3;
+            if ((!Prediction.SpeedDictionary.TryGetValue((float)((float)unit.Handle), out vector3) || vector3 == new Vector3(0f, 0f, 0f)) && unit.NetworkActivity == NetworkActivity.Move)
+            {
+                double item = 0;
+                if (Prediction.RotSpeedDictionary.ContainsKey((float)((float)unit.Handle)))
+                {
+                    item = Prediction.RotSpeedDictionary[(float)((float)unit.Handle)];
+                }
+                vector3 = (unit.Vector3FromPolarAngle((float)item, 1f) * (float)unit.MovementSpeed) / 1000f;
+            }
+            if (Prediction.IsIdle(unit))
+            {
+                return unit.Position;
+            }
+            Vector3 position = unit.Position + (vector3 * delay);
+            return new Vector3(position.X, position.Y, 0f);
         }
         public class SkillShotClass
         {

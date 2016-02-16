@@ -14,7 +14,7 @@ namespace Pudge_Plus.Classes
         public static Hero me;
         public static GlobalClasses.Tracker[] EnemyTracker = { new GlobalClasses.Tracker(null, 0), new GlobalClasses.Tracker(null, 0), new GlobalClasses.Tracker(null, 0), new GlobalClasses.Tracker(null, 0), new GlobalClasses.Tracker(null, 0), };// new GlobalClasses.Tracker[5];//Hero[] EnemyTracker = new Hero[5];
         //Strings//
-        public static string AuthorNotes = "Pudge+ created by NadeHouse\nCurrently running: public access BETA\nTips\n\tPress 'e' when a prediction box appears on the screen and the script\n\twill hook for you\n\t\tNote: It will attempt to hook closest enemy to your\n\t\tmouse, identified with the RED Prediction text\n\tA non moving enemy that can be automattically hooked will be identified\n\twith the orange 'Locked' text\n\tNote: Do not rely on this script to hook Spirit Breaker as he charges";
+        public static string AuthorNotes = "Pudge+ created by NadeHouse\nCurrently running: version 0.4\nTips\n\tPress 'e' when a prediction box appears on the screen and the script\n\twill hook for you\n\t\tNote: It will attempt to hook closest enemy to your\n\t\tmouse, identified with the RED Prediction text\n\tA non moving enemy that can be automattically hooked will be identified\n\twith the orange 'Locked' text\n\tNote: Do not rely on this script to hook Spirit Breaker as he charges";
         public static string LoadMessage = " > Pudge+ is now running";
         public static string UnloadMessage = " > Pudge+ is waiting for the next game to start.";
         public static string PredictMethod = "two"; //one = Pure maths //two = maths & prediction
@@ -31,6 +31,7 @@ namespace Pudge_Plus.Classes
         public static bool HookForMe = false;
         public static bool CoolDownMethod = true; //True = advanced, false = basic
         public static bool HookLocationDrawer = false;
+        public static bool AetherLens = false;
         //Ints//
         public static int TimeTillNextRune = -999;
         public static int EnemyIndex = 0;
@@ -59,6 +60,7 @@ namespace Pudge_Plus.Classes
         //misc
         public static Font font;
         public static ParticleEffect visibleGlow;
+        public static GlobalClasses.HookData hookData = new GlobalClasses.HookData();
         public static float GapRatio = 0.171875f;
         public static float RadiantStartRatio = 0.2760416667f;
         public static float DireStartRatio = 0.5546875f;

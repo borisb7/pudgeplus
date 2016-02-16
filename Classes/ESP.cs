@@ -492,10 +492,13 @@ namespace Pudge_Plus.Classes
                     {
                         var opponent = enemy.Position;
                         var distance = Math.Sqrt(Math.Pow((opponent.X - Variables.me.Position.X), 2) + Math.Pow((opponent.Y - Variables.me.Position.Y), 2)) - (enemy.HullRadius * 2);
+                        int bonus = 0;
+                        if (Variables.AetherLens)
+                            bonus = 200;
                         Color color;
-                        if (distance <= Variables.me.Spellbook.Spell1.CastRange)
+                        if (distance <= Variables.me.Spellbook.Spell1.CastRange + bonus)
                             color = Color.Green;
-                        else if (distance <= Variables.me.Spellbook.Spell1.CastRange + 80)
+                        else if (distance <= Variables.me.Spellbook.Spell1.CastRange + 80 + bonus)
                             color = Color.Orange;
                         else
                             color = Color.Red;

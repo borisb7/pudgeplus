@@ -27,8 +27,9 @@ namespace Pudge_Plus
             Variables.TopRune.rune = new Rune();
             Variables.BottomRune.rune = new Rune();
             GlobalClasses.MakeConfig();
-            
-           // var whatthefuckamIdoing = new Variables.CustomInteger(ref Variables.Settings.Basic_ESP_Value);
+
+          //  Unit.OnModifierAdded += Unit_OnModifierAdded;
+            // var whatthefuckamIdoing = new Variables.CustomInteger(ref Variables.Settings.Basic_ESP_Value);
             ESP.Draw.Interface.Add("Basic ESP", ref Variables.Settings.Basic_ESP_Value,"Name, Mana, Health", 0,1, Variables.Settings.OnOff);
             ESP.Draw.Interface.Add("Combo Status", ref Variables.Settings.Combo_Status_Value, "Curent Lethality of Combo", 0, 1, Variables.Settings.OnOff);
             ESP.Draw.Interface.Add("Maximum Damage Output", ref Variables.Settings.Maximum_Damage_Output_Value,"Maximum Available Damage", 0, 1, Variables.Settings.OnOff);
@@ -47,7 +48,7 @@ namespace Pudge_Plus
             ESP.Draw.Interface.Add("Spirit Breaker Charge", ref Variables.Settings.Spirit_Breaker_Charge_Value, "0 = Team, 1 = Me", 0, 2);
             ESP.Draw.Interface.Add("Hook Lines", ref Variables.Settings.Hook_Lines_value, "Hookable Indication Line", 0, 1, Variables.Settings.OnOff);
             ESP.Draw.Interface.Add("Save Settings", ref Variables.Settings.Save_Value, "Saves current settings", 0, 1, new string[] { "", "Saving" });
-            //  Game.OnUpdate += Game_OnUpdate; //Information
+            Game.OnUpdate += Game_OnUpdate; //Information
             Game.OnWndProc += Game_OnWndProc; //Keystroke Reader
             Drawing.OnDraw += Drawing_OnDraw; //Graphical Drawer
            //Drawing.OnEndScene += Drawing_OnEndScene;
@@ -65,6 +66,16 @@ namespace Pudge_Plus
                     
                 });*/
             Print.Encolored(Variables.AuthorNotes, ConsoleColor.Cyan);
+        }
+
+        private static void Unit_OnModifierAdded(Unit sender, ModifierChangedEventArgs args)
+        {
+            Print.Info(sender.Name + "|" + args.Modifier.Name);
+            if (sender.Name == "npc_dota_hero_antimage")
+            {
+                Print.Success("using other method");
+                HookHandler.QueueCombo(sender);
+            }
         }
         #region Not in use
         private static void Drawing_OnEndScene(EventArgs args)
@@ -93,7 +104,26 @@ namespace Pudge_Plus
 
         private static void Game_OnUpdate(EventArgs args)
         {
-            
+            if (Variables.inGame)
+            {
+                if (Utils.SleepCheck("UpdateTimeOut"))
+                {
+                    var aether = ObjectMgr.LocalHero.FindItem("item_aether_lens");
+                    if (aether != null)
+                    {
+                        if (Variables.DeveloperMode)
+                            Print.Success("Aether Lens Found");
+                        Variables.AetherLens = true;
+                    }
+                    else
+                    {
+                        if (Variables.DeveloperMode)
+                            Print.Error("Not found");
+                        Variables.AetherLens = false;
+                    }
+                    Utils.Sleep(250, "UpdateTimeOut");
+                }
+            }
         }
         #endregion
         private static void Game_OnWndProc(WndEventArgs args)
@@ -198,16 +228,15 @@ namespace Pudge_Plus
             /// Draw player information from icon bar
             /// Automatically cast spells.
             /// </summary>
-
-            /* First assign and declare your variables */
-            
+                       
 
             //Get players
             var players = ESP.Calculate.SpecificLists.GetPlayersNoSpecsNoIllusionsNoNull(); //Get Players
             List<Player> pla = players;
             if (!players.Any())
                 return;
-
+            
+            //Ensage.Common.Prediction.DrawPredictions();
             //Reset runes after waiting time
             if (Variables.Settings.Rune_Tracker_Value.val == 0)
             {
@@ -220,12 +249,23 @@ namespace Pudge_Plus
 
 
             if (Variables.DeveloperMode)
+            {
+                if (Variables.hookData.Enabled)
+                {
+                    Drawing.DrawText("Prediction", Variables.hookData.Prediction2D, Color.Cyan, FontFlags.Outline | FontFlags.AntiAlias);
+                }
+                foreach (var ent in ESP.Calculate.SpecificLists.EnemyHeroNotIllusion(players))
+                {
+
+                    Drawing.DrawText("HERE", Drawing.WorldToScreen(GlobalClasses.PredictXYZ(ent, 1000f)), Color.Red, FontFlags.Outline | FontFlags.AntiAlias);
+                }
                 if (Variables.HookLocationDrawer)
                 {
                     Drawing.DrawText("HOOKED HERE", Variables.AutoHookLocation, Color.Red, FontFlags.AntiAlias | FontFlags.Outline);
                     Drawing.DrawText("ENEMY WAS HERE", Variables.EnemyLocation, Color.Red, FontFlags.AntiAlias | FontFlags.Outline);
                     Drawing.DrawText("PREDICTION", Variables.PredictionLocation, Color.Cyan, FontFlags.AntiAlias | FontFlags.Outline);
                 }
+            }
             ESP.Draw.Notifier.Backdrop(10, 47, 120, 53, new Color(0, 0, 0, 200));
             //Get runes
             if (Variables.Settings.Rune_Tracker_Value.val == 0)
