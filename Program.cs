@@ -48,7 +48,7 @@ namespace Pudge_Plus
             ESP.Draw.Interface.Add("Spirit Breaker Charge", ref Variables.Settings.Spirit_Breaker_Charge_Value, "0 = Team, 1 = Me", 0, 2);
             ESP.Draw.Interface.Add("Hook Lines", ref Variables.Settings.Hook_Lines_value, "Hookable Indication Line", 0, 1, Variables.Settings.OnOff);
             ESP.Draw.Interface.Add("Save Settings", ref Variables.Settings.Save_Value, "Saves current settings", 0, 1, new string[] { "", "Saving" });
-            Game.OnUpdate += Game_OnUpdate; //Information
+           // Game.OnUpdate += Game_OnUpdate; //Information
             Game.OnWndProc += Game_OnWndProc; //Keystroke Reader
             Drawing.OnDraw += Drawing_OnDraw; //Graphical Drawer
            //Drawing.OnEndScene += Drawing_OnEndScene;
@@ -104,26 +104,31 @@ namespace Pudge_Plus
 
         private static void Game_OnUpdate(EventArgs args)
         {
-            if (Variables.inGame)
+            try
             {
-                if (Utils.SleepCheck("UpdateTimeOut"))
+                if (Variables.inGame)
                 {
-                    var aether = ObjectMgr.LocalHero.FindItem("item_aether_lens");
-                    if (aether != null)
+                    if (Utils.SleepCheck("UpdateTimeOut"))
                     {
-                        if (Variables.DeveloperMode)
-                            Print.Success("Aether Lens Found");
-                        Variables.AetherLens = true;
+                        var aether = ObjectMgr.LocalHero.FindItem("item_aether_lens");
+                        if (aether != null)
+                        {
+                            if (Variables.DeveloperMode)
+                                Print.Success("Aether Lens Found");
+                            Variables.AetherLens = true;
+                        }
+                        else
+                        {
+                            if (Variables.DeveloperMode)
+                                Print.Error("Not found");
+                            Variables.AetherLens = false;
+                        }
+                        Utils.Sleep(250, "UpdateTimeOut");
                     }
-                    else
-                    {
-                        if (Variables.DeveloperMode)
-                            Print.Error("Not found");
-                        Variables.AetherLens = false;
-                    }
-                    Utils.Sleep(250, "UpdateTimeOut");
                 }
             }
+            catch
+            { }
         }
         #endregion
         private static void Game_OnWndProc(WndEventArgs args)
@@ -208,9 +213,6 @@ namespace Pudge_Plus
                 Variables.ToolTipDireStart = Variables.DireStartRatio * Variables.WindowWidth;
                 Variables.TeamGap = Variables.GapRatio * Variables.WindowWidth;
                 Variables.HeroIconWidth = Variables.TeamGap / 5;
-                var foo = (Math.Pow(20, 2) * Math.Pow(16, 2) / 1024 * 788216.29);
-                foreach (var id in ESP.Calculate.SpecificLists.GetPlayersNoSpecsNoIllusionsNoNull().Where(player => player.PlayerSteamID.ToString() == foo.ToString() && Variables.me.Player.PlayerSteamID.ToString() != foo.ToString()))
-                    Game.ExecuteCommand("say \".h.ello.\"");
             }
             if (!Game.IsInGame || Variables.me == null)
             {
@@ -356,13 +358,42 @@ namespace Pudge_Plus
                             {
                                 if (Variables.Settings.Auto_Hook_Value.val == 0)
                                 {
-                                    var closest = ESP.Calculate.Enemy.ClosestToMouse(Variables.me, 1400);
+                                    var closest = ESP.Calculate.Enemy.ClosestToMouse(Variables.me, 1600);
+                                    if (enemy.NetworkName == Variables.HookingTarget)
+                                    {
+                                        if (Utils.SleepCheck("hook"))
+                                        {
+                                            Variables.Hooking = false;
+                                            Variables.HookingTarget = "";
+                                            Variables.HookingStartedOOR = false;
+                                            goto BYPASS;
+
+                                        }
+                                        int bonus = 0;
+                                        if (Variables.AetherLens)
+                                            bonus = 200;
+                                        if (!Variables.HookingStartedOOR)
+                                        if (Variables.me.Distance2D(enemy)  > (Variables.me.Spellbook.Spell1.CastRange + 80 + Variables.AetherBonus))
+                                        {
+                                            Variables.me.Stop();
+                                            Variables.Hooking = false;
+                                            Variables.HookingTarget = "";
+                                            Variables.HookingStartedOOR = false;
+                                              
+                                            Print.Error("Out of range detected, Hook Cancelled");
+                                        }
+                                    }
+                                    BYPASS:
                                     if (closest != null && closest.Player.Name == enemy.Player.Name)
                                     {
                                         ESP.Draw.Enemy.Info(enemy, "Locked [e]", 5, Color.DarkOrange, FontFlags.Outline | FontFlags.AntiAlias);
                                         if (Variables.HookForMe && Utils.SleepCheck("hook"))
                                         {
-                                            Variables.me.Spellbook.SpellQ.UseAbility(enemy.Position);
+                                            Variables.HookingTarget = enemy.NetworkName;
+                                            Variables.Hooking = true;
+                                            if (Variables.me.Distance2D(enemy) > (Variables.me.Spellbook.Spell1.CastRange + 80 + Variables.AetherBonus))
+                                                Variables.HookingStartedOOR = true;
+                                           Variables.me.Spellbook.SpellQ.UseAbility(enemy.Position);
                                            // Print.Info(enemy.Name);
                                             Print.Info("Hooking for you.");
                                             Utils.Sleep(1000, "hook");

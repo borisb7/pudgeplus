@@ -321,6 +321,10 @@ namespace Pudge_Plus.Classes
                                     if (Utils.SleepCheck("hook") && (Variables.HookForMe))
                                     {
                                         Print.Info("casting hook");
+                                        Variables.HookingTarget = enemy.NetworkName;
+                                        Variables.Hooking = true;
+                                        if (DistanceFromMeToPredict > (Variables.me.Spellbook.Spell1.CastRange + 80 + Variables.AetherBonus))
+                                            Variables.HookingStartedOOR = true;
                                         Variables.HookLocationDrawer = true;
                                         Variables.EnemyLocation = Drawing.WorldToScreen(enemy.Position);
                                         Variables.AutoHookLocation = Drawing.WorldToScreen(StraightDis3D1);

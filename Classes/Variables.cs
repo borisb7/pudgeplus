@@ -32,6 +32,10 @@ namespace Pudge_Plus.Classes
         public static bool CoolDownMethod = true; //True = advanced, false = basic
         public static bool HookLocationDrawer = false;
         public static bool AetherLens = false;
+        //States//
+        public static bool HookingStartedOOR = false;
+        public static bool Hooking = false;
+        public static string HookingTarget = "";
         //Ints//
         public static int TimeTillNextRune = -999;
         public static int EnemyIndex = 0;
@@ -41,6 +45,7 @@ namespace Pudge_Plus.Classes
         public static int MouseOffset = 0;
         public static string ResponseIndex = "null";
         public static int AttemptsRemaining = 3;
+        public static int AetherBonus = 0;
         //floats//
         public static float ToolTipActivationY;
         public static float ToolTipRadiantStart;
