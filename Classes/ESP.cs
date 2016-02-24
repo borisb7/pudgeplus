@@ -583,25 +583,28 @@ namespace Pudge_Plus.Classes
         {
             public static class Enemy
             {
-                public static bool isMoving(Vector3 pos, int Index)
+                public static bool isMoving(Vector3 pos, int Index, string name = "null")
                 {
-                    if (Utils.SleepCheck("movingTimeout"))
+                    
+                    if (Utils.SleepCheck("movingTimeout1"))
                     {
+                     //   if (name != "null")
+                       //     Print.Encolored(name, ConsoleColor.White);
                         //Print.Encolored("Comparing", ConsoleColor.Yellow);
                         //Print.Encolored(pos.ToString(), ConsoleColor.Cyan);
                         //Print.Encolored(Variables.EnemiesPos[Index].ToString(), ConsoleColor.Magenta);
                         if (pos != Variables.EnemiesPos[Index])
                         {
-                           // Print.Success(Index + " is moving");
-                            Utils.Sleep(100,"movingTimeout");
+                         //   Print.Success(Index + " is moving");
+                            Utils.Sleep(50,"movingTimeout");
                             Variables.EnemiesPosStatus[Index] = true;
 
                             return true;
                         }
                         else
                         {
-                           // Print.Error(Index + " is not moving");
-                            Utils.Sleep(100, "movingTimeout");
+                        //    Print.Error(Index + " is not moving");
+                            Utils.Sleep(50, "movingTimeout");
                             Variables.EnemiesPosStatus[Index] = false;
                             return false;
                         }
