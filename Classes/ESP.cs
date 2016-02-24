@@ -587,21 +587,21 @@ namespace Pudge_Plus.Classes
                 {
                     if (Utils.SleepCheck("movingTimeout"))
                     {
-                       // Print.Encolored("Comparing", ConsoleColor.Yellow);
-                       // Print.Encolored(pos.ToString(), ConsoleColor.Cyan);
-                       // Print.Encolored(Variables.EnemiesPos[Index].ToString(), ConsoleColor.Magenta);
+                        //Print.Encolored("Comparing", ConsoleColor.Yellow);
+                        //Print.Encolored(pos.ToString(), ConsoleColor.Cyan);
+                        //Print.Encolored(Variables.EnemiesPos[Index].ToString(), ConsoleColor.Magenta);
                         if (pos != Variables.EnemiesPos[Index])
                         {
                            // Print.Success(Index + " is moving");
-                            Utils.Sleep(25,"movingTimeout");
+                            Utils.Sleep(100,"movingTimeout");
                             Variables.EnemiesPosStatus[Index] = true;
 
                             return true;
                         }
                         else
                         {
-                            //Print.Error(Index + " is not moving");
-                            Utils.Sleep(25, "movingTimeout");
+                           // Print.Error(Index + " is not moving");
+                            Utils.Sleep(100, "movingTimeout");
                             Variables.EnemiesPosStatus[Index] = false;
                             return false;
                         }
