@@ -351,7 +351,7 @@ namespace Pudge_Plus
                                         if (predict.PredictedLocation != Vector2.Zero)
                                             ESP.Draw.Enemy.PredictionBox(predict, Color.Black);
                                     }
-                                    else if (Variables.Settings.Prediction_Box_Value.val == 1)
+                                 /*   else if (Variables.Settings.Prediction_Box_Value.val == 1)
                                     {
                                         try
                                         {
@@ -360,7 +360,7 @@ namespace Pudge_Plus
                                         }
                                         catch
                                         { }
-                                    }
+                                    }*/
                                 }
                                 catch { }
                             }
