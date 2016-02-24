@@ -320,7 +320,7 @@ namespace Pudge_Plus.Classes
                                 {
                                     if (Utils.SleepCheck("hook") && (Variables.HookForMe))
                                     {
-                                        Print.Info("casting hook");
+                                        Print.Info("Casting Predicted Hook");
                                         Variables.HookingTarget = enemy.NetworkName;
                                         Variables.Hooking = true;
                                         if (DistanceFromMeToPredict > (Variables.me.Spellbook.Spell1.CastRange + 80 + Variables.AetherBonus))
@@ -339,8 +339,10 @@ namespace Pudge_Plus.Classes
                                             Variables.hookData.Enabled = true;
                                         }
                                         //
-                                        //Variables.me.Spellbook.Spell1.UseAbility(StraightDis3D1); //Hook based on prediction location (buggy)
-                                        Variables.me.Spellbook.Spell1.CastSkillShot(enemy); //Ensage skill shot caster (temp solution untill fix)
+                                        Variables.me.Spellbook.Spell1.UseAbility(StraightDis3D1); //Hook based on prediction location (buggy)'
+                                      //  Print.Error("Does this shit even work?");
+                                       // Variables.me.Spellbook.Spell1.CastSkillShot(enemy); //Ensage skill shot caster (temp solution untill fix)
+                                      //  Print.Success("Must work?");
                                         
                                         Utils.Sleep(1000, "hook");
                                         Variables.HookForMe = false;

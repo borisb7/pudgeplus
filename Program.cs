@@ -351,6 +351,16 @@ namespace Pudge_Plus
                                         if (predict.PredictedLocation != Vector2.Zero)
                                             ESP.Draw.Enemy.PredictionBox(predict, Color.Black);
                                     }
+                                    else if (Variables.Settings.Prediction_Box_Value.val == 1)
+                                    {
+                                        try
+                                        {
+
+                                            Ensage.Common.Prediction.DrawPredictions();
+                                        }
+                                        catch
+                                        { }
+                                    }
                                 }
                                 catch { }
                             }
@@ -395,7 +405,7 @@ namespace Pudge_Plus
                                                 Variables.HookingStartedOOR = true;
                                            Variables.me.Spellbook.SpellQ.UseAbility(enemy.Position);
                                            // Print.Info(enemy.Name);
-                                            Print.Info("Hooking for you.");
+                                            Print.Info("Hooking Stationary Target");
                                             Utils.Sleep(1000, "hook");
                                         }
                                     }

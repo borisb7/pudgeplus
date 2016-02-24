@@ -585,10 +585,29 @@ namespace Pudge_Plus.Classes
             {
                 public static bool isMoving(Vector3 pos, int Index)
                 {
-                    if (pos != Variables.EnemiesPos[Index])
-                        return true;
-                    else
-                        return false;
+                    if (Utils.SleepCheck("movingTimeout"))
+                    {
+                       // Print.Encolored("Comparing", ConsoleColor.Yellow);
+                       // Print.Encolored(pos.ToString(), ConsoleColor.Cyan);
+                       // Print.Encolored(Variables.EnemiesPos[Index].ToString(), ConsoleColor.Magenta);
+                        if (pos != Variables.EnemiesPos[Index])
+                        {
+                           // Print.Success(Index + " is moving");
+                            Utils.Sleep(25,"movingTimeout");
+                            Variables.EnemiesPosStatus[Index] = true;
+
+                            return true;
+                        }
+                        else
+                        {
+                            //Print.Error(Index + " is not moving");
+                            Utils.Sleep(25, "movingTimeout");
+                            Variables.EnemiesPosStatus[Index] = false;
+                            return false;
+                        }
+                    }
+                   // Print.Info("Forced " +Variables.EnemiesPosStatus[Index]);
+                    return Variables.EnemiesPosStatus[Index];
                 }
                 public static Hero ClosestToMouse(Hero source, float range = 1000)
                 {

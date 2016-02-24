@@ -32,6 +32,7 @@ namespace Pudge_Plus.Classes
         public static bool CoolDownMethod = true; //True = advanced, false = basic
         public static bool HookLocationDrawer = false;
         public static bool AetherLens = false;
+        public static bool[] EnemiesPosStatus = new bool[5];
         //States//
         public static bool HookingStartedOOR = false;
         public static bool Hooking = false;
