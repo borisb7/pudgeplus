@@ -55,7 +55,7 @@ namespace Pudge_Plus
            //Drawing.OnPostReset += Drawing_OnPostReset;
            //Drawing.OnPreReset += Drawing_OnPreReset;
            //AppDomain.CurrentDomain.DomainUnload += CurrentDomain_DomainUnload;
-            Variables.font = new SharpDX.Direct3D9.Font(
+         /*   Variables.font = new SharpDX.Direct3D9.Font(
                 Drawing.Direct3DDevice9,
                 new FontDescription
                 {
@@ -66,7 +66,7 @@ namespace Pudge_Plus
                     
                 });
             Print.Encolored(Variables.AuthorNotes, ConsoleColor.Cyan);
-        }
+       */ }
 
         private static void Unit_OnModifierAdded(Unit sender, ModifierChangedEventArgs args)
         {
@@ -352,7 +352,7 @@ namespace Pudge_Plus
                                         if (predict.PredictedLocation != Vector2.Zero)
                                             ESP.Draw.Enemy.PredictionBox(predict, Color.Black);
                                     }
-                                    else if (Variables.Settings.Prediction_Box_Value.val == 1)
+                                /*    else if (Variables.Settings.Prediction_Box_Value.val == 1)
                                     {
                                         try
                                         {
@@ -360,7 +360,7 @@ namespace Pudge_Plus
                                         }
                                         catch
                                         { }
-                                    }
+                                    }*/
                                 }
                                 catch { }
                             }
