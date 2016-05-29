@@ -55,7 +55,7 @@ namespace Pudge_Plus
            //Drawing.OnPostReset += Drawing_OnPostReset;
            //Drawing.OnPreReset += Drawing_OnPreReset;
            //AppDomain.CurrentDomain.DomainUnload += CurrentDomain_DomainUnload;
-           /* Variables.font = new SharpDX.Direct3D9.Font(
+        /*    Variables.font = new SharpDX.Direct3D9.Font(
                 Drawing.Direct3DDevice9,
                 new FontDescription
                 {
@@ -64,8 +64,8 @@ namespace Pudge_Plus
                     OutputPrecision = FontPrecision.Raster,
                     Quality = FontQuality.ClearTypeNatural,                   
                     
-                });*/
-            Print.Encolored(Variables.AuthorNotes, ConsoleColor.Cyan);
+                });
+         */   Print.Encolored(Variables.AuthorNotes, ConsoleColor.Cyan);
         }
 
         private static void Unit_OnModifierAdded(Unit sender, ModifierChangedEventArgs args)
@@ -178,7 +178,6 @@ namespace Pudge_Plus
                                 case 37: //left
                                     ESP.Draw.Interface.MenuControls.Left();
                                     break;
-                                  
                             }
                         }
                         break;
@@ -197,6 +196,7 @@ namespace Pudge_Plus
                     GlobalClasses.SaveConfig();
                 }
             }
+          //  Variables.font.DrawText(null, "test", 50, 50, Color.Orange);
             #region Fundamentals
             Variables.me = ObjectMgr.LocalHero;
             if (!Variables.inGame)
@@ -323,6 +323,7 @@ namespace Pudge_Plus
             int enemyIndex = 0;
             foreach (var enemy in ESP.Calculate.SpecificLists.EnemyHeroNotIllusion(players))
             {
+                //Print.Success(enemy.Name + " " + Variables.EnemyIndex);
                 if (enemy.Player.Hero.IsAlive && enemy.Player.Hero.IsVisible)
                 {
                     if (Variables.Settings.Enemy_Skills_Value.val < 2)
@@ -341,7 +342,7 @@ namespace Pudge_Plus
                         {
                             HookHandler.main(enemy);
                             ESP.Draw.Enemy.pudge(enemy);
-                            if (ESP.Calculate.Enemy.isMoving(enemy.Position, Variables.EnemyIndex))
+                            if (ESP.Calculate.Enemy.isMoving(enemy.Position, Variables.EnemyIndex, enemy.Name))
                             {
                                 try
                                 {
@@ -351,11 +352,10 @@ namespace Pudge_Plus
                                         if (predict.PredictedLocation != Vector2.Zero)
                                             ESP.Draw.Enemy.PredictionBox(predict, Color.Black);
                                     }
-                                 /*   else if (Variables.Settings.Prediction_Box_Value.val == 1)
+                               /*     else if (Variables.Settings.Prediction_Box_Value.val == 1)
                                     {
                                         try
                                         {
-
                                             Ensage.Common.Prediction.DrawPredictions();
                                         }
                                         catch
